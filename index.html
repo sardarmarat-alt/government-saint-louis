@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Government</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ====================== HEADER ====================== -->
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand">
+      <div class="seal">GOV</div>
+      <div class="brand-text">
+        <span class="brand-title">Government</span>
+        <span class="brand-sub">State of Saint Louis</span>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="#structure" class="nav-link">Структура</a>
+      <a href="#leadership" class="nav-link">Руководство</a>
+      <a href="#departments" class="nav-link">Министерства</a>
+      <a href="#apply" class="nav-link">Заявление на Юриста</a>
+      <a href="#event" class="nav-link">Мероприятие</a>
+      <a href="#contacts" class="nav-link">Контакты</a>
+      <a href="statements.html" class="nav-link" style="color: #C9A24B; font-weight: bold;">Статусы заявлений</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Открыть меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ====================== HERO ====================== -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div class="hero-seal">GOV</div>
+    <h1 class="hero-title">Government<br>Saint&nbsp;Louis</h1>
+    <p class="hero-motto">«Свобода. Братство. Равенство.»</p>
+    <p class="hero-desc">
+      Официальный портал правительства. Здесь публикуются постонавления губернатора,
+      структура органов власти, контакты министерств, форма обращения граждан и новости штата.
+    </p>
+    <div class="hero-actions">
+      <a href="#apply" class="btn btn-primary">Подать заявку на Юриста</a>
+      <a href="#decrees" class="btn btn-ghost">Постановления губернатора</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== STRUCTURE ====================== -->
+<section id="structure" class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">01 · Орган власти</span>
+      <h2>Структура правительства</h2>
+      <p class="section-desc">Иерархия должностей правительства штата.</p>
+    </div>
+
+    <div class="hierarchy">
+      <div class="hierarchy-row">
+        <div class="hierarchy-card top">
+          <span class="rank">Губернатор штата</span>
+          <span class="rank-en">Governor</span>
+        </div>
+      </div>
+      <div class="hierarchy-row">
+        <div class="hierarchy-card">
+          <span class="rank">Заместитель губернатора</span>
+          <span class="rank-en">Deputy Governor</span>
+        </div>
+      </div>
+      <div class="hierarchy-row triple">
+        <div class="hierarchy-card">
+          <span class="rank">Министерство юстиции</span>
+          <span class="rank-en">Ministry of Justice</span>
+        </div>
+        <div class="hierarchy-card">
+          <span class="rank">Министерство финансов</span>
+          <span class="rank-en">Ministry of Finance</span>
+        </div>
+        <div class="hierarchy-card">
+          <span class="rank">Министерство социальной политики</span>
+          <span class="rank-en">Ministry of Social Policy</span>
+        </div>
+      </div>
+      <div class="hierarchy-row">
+        <div class="hierarchy-card muted">
+          <span class="rank">Министерство государственной безопасности</span>
+          <span class="rank-en">Ministry of State Security</span>
+        </div>
+        <div class="hierarchy-card">
+          <span class="rank">Министерство информационной связи</span>
+          <span class="rank-en">Ministry of Information and Communication</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== LEADERSHIP ====================== -->
+<section id="leadership" class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">02 · Руководство</span>
+      <h2>Действующее руководство</h2>
+      <p class="section-desc">Текущий состав руководства правительства.</p>
+    </div>
+
+    <div class="staff-grid">
+      <article class="staff-card">
+        <div class="staff-photo">
+    <img src="images/governor.jpg" alt="Марат Сардар">
+</div>
+        <h3 class="staff-name">Marat Sardar</h3>
+        <p class="staff-role">Governor</p>
+        <p class="staff-info">В должности с: 14.06.2026<br>VK: @username</p>
+      </article>
+      <article class="staff-card">
+  <div class="staff-photo">
+    <img src="images/deputy.jpg" alt="Crum Hudson" class="deputy-img">
+  </div>
+  
+  <h3 class="staff-name">Crum Hudson</h3>
+  <p class="staff-role">Deputy Governor</p>
+  <p class="staff-info">В должности с: 21.06.2026<br>VK: @username</p>
+</article>
+      <article class="staff-card">
+  <div class="staff-photo">
+    <img src="images/finance.jpg" alt="Andriy Pastor" class="finance-img">
+  </div>
+    <h3 class="staff-name">Andrey Pastor</h3>
+    <p class="staff-role">Minister of Finance</p>
+    <p class="staff-info">В должности с: 12.05.2026<br>VK: @username</p>
+      </article>
+  <article class="staff-card">
+    <div class="staff-photo">
+        <img src="images/justice.jpg" alt="Christian Ruthellss" class="justice-img">
+    </div>
+    <h3 class="staff-name">Christian Ruthellss</h3>
+    <p class="staff-role">Minister of Justice</p>
+    <p class="staff-info">В должности с: 15.06.2026<br>VK: @username</p>
+</article>
+  <article class="staff-card">
+    <div class="staff-photo">
+        <img src="images/security.jpg" alt="Lucky Grek" class="security-img">
+    </div>
+    <h3 class="staff-name">Lucky Grek</h3>
+    <p class="staff-role">Minister of State Security</p>
+    <p class="staff-info">В должности с: 24.06.2026<br>VK: @username</p>
+</article>
+  <article class="staff-card">
+    <div class="staff-photo">
+        <img src="images/info.jpg" alt="Loli Molika" class="info-img">
+    </div>
+    <h3 class="staff-name">Loli Molika</h3>
+    <p class="staff-role">Minister of Information and Communication</p>
+    <p class="staff-info">В должности с: 31.05.2026<br>VK: @username</p>
+</article>
+<article class="staff-card">
+    <div class="staff-photo">
+        <img src="images/social.jpg" alt="Josep Westwood" class="social-img">
+    </div>
+    <h3 class="staff-name">Josep Westwood</h3>
+    <p class="staff-role">Minister of Social Affairs</p>
+    <p class="staff-info">В должности с: 17.06.2026<br>VK: @username</p>
+</article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================== DEPARTMENTS ====================== -->
+<section id="departments" class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">04 · Подразделения</span>
+      <h2>Министерства</h2>
+      <p class="section-desc">Основные направления деятельности правительства.</p>
+    </div>
+
+    <div class="dept-grid">
+      <article class="dept-card">
+        <h3>Министерство финансов</h3>
+        <p>Бюджет штата, налоги, субсидии и финансовая отчётность.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Министерство юстиции</h3>
+        <p>Право, суды, правосудие.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Министерство информации и связи</h3>
+        <p>Информирование граждан, пресс-релизы, обращения и жалобы.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Департамент государственной безопасности</h3>
+        <p>Государственная безопасность, противoдействие терроризму и организованной преступности.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Министерство социальной политики</h3>
+        <p>Социальная защита, здравоохранение, образование и культура.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== APPLY ====================== -->
+<section id="apply" class="section">
+  <div class="apply-box">
+    <h3>Онлайн-заявление на должность Юриста</h3>
+    <form id="statement-form" class="interactive-form"> 
+      <div class="form-group">
+        <label for="char-name">Имя и Фамилия (Nick Name):</label>
+        <input type="text" id="char-name" name="charName" required placeholder="Ivan Ivanov">
+      </div>
+
+      <div class="form-group">
+        <label for="char-age">Время проживания в штате (лет):</label>
+        <input type="number" id="char-age" name="charAge" required placeholder="25">
+      </div>
+
+      <div class="form-group">
+        <label for="vk-tag">Связь (VK):</label>
+        <input type="text" id="vk-tag" name="vk" required placeholder="username">
+      </div>
+
+      <div class="form-group">
+        <label for="bio">Краткая биография / Опыт работы:</label>
+        <textarea id="bio" name="biography" rows="4" required placeholder="Расскажите о себе..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="about-oop">Что такое ООП и где оно регламентируется:</label>
+        <textarea id="about-oop" name="aboutoop" rows="4" required placeholder="В каких законодательных документах можно найти информацию"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="what-oop">За нарушение каких статей присваивается статус ООП:</label>
+        <textarea id="what-oop" name="whatoop" rows="4" required placeholder="Приведите хотя бы 3 примера"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="oop-order">Назовите правильный порядок проверки заключённого на наличие статуса ООП</label>
+        <textarea id="oop-order" name="oopOrder" rows="4" required placeholder="Очередность действий"></textarea>
+      </div>
+      
+      <button type="submit" class="btn btn-primary">Отправить заявление</button>
+    </form>
+    <div id="form-message" class="form-message"></div>
+  </div>
+</section>
+
+<!-- ====================== State Coins Goss Event ====================== -->
+
+<section id="event" class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Особое Мероприятие</span>
+      <h2>Межведомственный Турнир Штата</h2>
+      <p class="section-desc">Масштабные соревнования среди государственных организаций Saint Louis.</p>
+    </div>
+    
+    <div class="dept-grid">
+      <article class="dept-card" style="border-top-color: #4caf50;">
+        <h3>Призовой фонд</h3>
+        <p>Уникальные награды, денежные призы для министерств-победителей и финансирование ведомств.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Этапы соревнований</h3>
+        <p>1. Ежедневные задания от правительства<br>2. Межфракционные бои<br>3. Опасные задания для фракций</p>
+      </article>
+    </div>
+    
+    <div style="margin-top: 30px; text-align: center;">
+      <a href="#apply-event" class="btn btn-ghost">Регистрация ведомства</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== CONTACTS ====================== -->
+<section id="contacts" class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">06 · Связь</span>
+      <h2>Контакты</h2>
+    </div>
+
+    <div class="contacts-grid">
+      <div class="contact-item">
+        <span class="contact-label">Форум</span>
+        <a href="https://evolve-rp.su/forums/30/" target="_blank" rel="noopener">evolve-rp.su/forums/30</a>
+      </div>
+      <div class="contact-item">
+        <span class="contact-label">Discord</span>
+        <a href="#">discord.gg/example</a>
+      </div>
+  </div>
+</section>
+
+<!-- ====================== FOOTER ====================== -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-seal">GOV</div>
+    <p>© Правительство Saint Louis · Evolve RP</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
