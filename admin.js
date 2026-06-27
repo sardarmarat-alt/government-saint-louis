@@ -4,9 +4,9 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 let sbClient = null;
 
-// Глобальные переменные для хранения сессии авторизации
-let CURRENT_ADMIN_USER = '';
-let CURRENT_ADMIN_HASH = '';
+// Глобальные переменные теперь берут начальные значения из sessionStorage (если они там есть)
+let CURRENT_ADMIN_USER = sessionStorage.getItem('admin_user') || '';
+let CURRENT_ADMIN_HASH = sessionStorage.getItem('admin_hash') || '';
 
 // Функция безопасной инициализации Supabase при старте страницы
 function initSupabase() {
@@ -19,10 +19,24 @@ function initSupabase() {
   }
 }
 
-// Запускаем инициализацию сразу, как только загрузится DOM дерево
+// Запускаем инициализацию и проверку существующей сессии при загрузке страницы
 document.addEventListener("DOMContentLoaded", () => {
   initSupabase();
+  checkExistingSession(); // Проверяем, залогинен ли уже пользователь
 });
+
+// Проверка активной сессии (чтобы не вылетало при обновлении)
+function checkExistingSession() {
+  if (CURRENT_ADMIN_USER && CURRENT_ADMIN_HASH) {
+    console.log(`Найдена активная сессия для ${CURRENT_ADMIN_USER}. Пропускаем авторизацию.`);
+    
+    // Скрываем окно входа и сразу показываем админку
+    if (document.getElementById('loginOverlay')) document.getElementById('loginOverlay').style.display = 'none';
+    if (document.getElementById('adminContent')) document.getElementById('adminContent').style.display = 'block';
+    
+    loadAdminCards();
+  }
+}
 
 // Функция хеширования на стороне клиента
 async function sha256(message) {
@@ -76,8 +90,11 @@ async function handleLogin() {
           document.getElementById('changePassOverlay').style.display = 'flex';
         }
       } else {
-        // Если зашли под уже измененным, обычным паролем — сразу пускаем в кабинет
-        console.log("Вход выполнен по постоянному паролю.");
+        // СОХРАНЯЕМ СЕССИЮ: Если пароль постоянный, запоминаем его до закрытия вкладки
+        sessionStorage.setItem('admin_user', CURRENT_ADMIN_USER);
+        sessionStorage.setItem('admin_hash', CURRENT_ADMIN_HASH);
+
+        console.log("Вход выполнен по постоянному паролю. Сессия сохранена.");
         if (document.getElementById('loginOverlay')) document.getElementById('loginOverlay').style.display = 'none';
         if (document.getElementById('adminContent')) document.getElementById('adminContent').style.display = 'block';
         if (errorMsg) errorMsg.style.display = 'none';
@@ -128,6 +145,10 @@ async function handlePasswordChange() {
       alert("Постоянный пароль успешно установлен!");
       CURRENT_ADMIN_HASH = newHash;
       
+      // СОХРАНЯЕМ СЕССИЮ после успешной смены пароля
+      sessionStorage.setItem('admin_user', CURRENT_ADMIN_USER);
+      sessionStorage.setItem('admin_hash', CURRENT_ADMIN_HASH);
+
       if (document.getElementById('changePassOverlay')) document.getElementById('changePassOverlay').style.display = 'none';
       if (document.getElementById('adminContent')) document.getElementById('adminContent').style.display = 'block';
       document.getElementById('newPassword').value = '';
@@ -231,14 +252,9 @@ async function processStatus(id, newStatus) {
   const commentInput = document.getElementById(`comment-${id}`);
   const comment = commentInput ? commentInput.value.trim() : '';
 
-  // НЮАНС: Если отклоняют и комментарий пустой — спрашиваем подтверждение
   if (newStatus === 'Отклонено' && comment === '') {
     const confirmReject = confirm("Причина отказа не указана. Всё равно отклонить заявление?");
-    
-    // Если пользователь нажал "Отмена", то прерываем функцию и ничего не отправляем в базу
-    if (!confirmReject) {
-      return; 
-    }
+    if (!confirmReject) return; 
   }
 
   try {
