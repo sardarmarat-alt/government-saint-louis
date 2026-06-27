@@ -1,12 +1,12 @@
 /* =========================================================
    Government — STYLESHEET
-   Палитра:
-     --bg-deep   #0F1B2D  основной фон
-     --bg-panel  #16263D  панели / альт-секции
-     --gold      #C9A24B  акцент (герб, кнопки)
-     --text-main #E8EAED  основной текст
-     --text-mute #8A99AD  второстепенный текст
-     --line      #25364F  разделители
+   Colors:
+     --bg-deep   #0F1B2D  primary
+     --bg-panel  #16263D  panels / alt sections
+     --gold      #C9A24B  bottons
+     --text-main #E8EAED  main text
+     --text-mute #8A99AD  other text
+     --line      #25364F  differentiate
    ========================================================= */
 
 :root {
