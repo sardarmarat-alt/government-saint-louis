@@ -1,14 +1,14 @@
-// Данные твоего проекта Supabase
+// Project data for Supabase
 const SUPABASE_URL = "https://lwdumseishjeopiefcth.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx3ZHVtc2Vpc2hqZW9waWVmY3RoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODE3MTUsImV4cCI6MjA5ODA1NzcxNX0.ot9YuYuJBtATyJxFSF8_jfZ-O3epgomBH6SJlVzWil4";
 
 let sbClient = null;
 
-// Глобальные переменные теперь берут начальные значения из sessionStorage (если они там есть)
+// Global variables now take initial values from sessionStorage (if they are there)
 let CURRENT_ADMIN_USER = sessionStorage.getItem('admin_user') || '';
 let CURRENT_ADMIN_HASH = sessionStorage.getItem('admin_hash') || '';
 
-// Функция безопасной инициализации Supabase при старте страницы
+// Function for safe Supabase initialization on page start
 function initSupabase() {
   if (window.supabase) {
     sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -19,13 +19,13 @@ function initSupabase() {
   }
 }
 
-// Запускаем инициализацию и проверку существующей сессии при загрузке страницы
+// initialize Supabase and check for existing session on page load
 document.addEventListener("DOMContentLoaded", () => {
   initSupabase();
   checkExistingSession(); // Проверяем, залогинен ли уже пользователь
 });
 
-// Проверка активной сессии (чтобы не вылетало при обновлении)
+// Check if there's an existing session and skip login if so
 function checkExistingSession() {
   if (CURRENT_ADMIN_USER && CURRENT_ADMIN_HASH) {
     console.log(`Найдена активная сессия для ${CURRENT_ADMIN_USER}. Пропускаем авторизацию.`);
@@ -81,7 +81,7 @@ async function handleLogin() {
 
       document.getElementById('password').value = '';
 
-      // ПРОВЕРКА: Если введённый текст пароля начинается с ACTIVATE_ — это первый вход
+      // CHECK: If the entered password text starts with ACTIVATE_ — this is the first login
       if (passInp.startsWith('ACTIVATE_')) {
         console.log("Обнаружен активационный код. Открываем окно создания постоянного пароля.");
         
@@ -119,7 +119,7 @@ async function handleLogin() {
   }
 }
 
-// ---- Смена временного пароля ----
+// ---- Handle password change ----
 async function handlePasswordChange() {
   if (!sbClient) initSupabase();
 
@@ -145,7 +145,7 @@ async function handlePasswordChange() {
       alert("Постоянный пароль успешно установлен!");
       CURRENT_ADMIN_HASH = newHash;
       
-      // СОХРАНЯЕМ СЕССИЮ после успешной смены пароля
+      // save sessionStorage with new hash
       sessionStorage.setItem('admin_user', CURRENT_ADMIN_USER);
       sessionStorage.setItem('admin_hash', CURRENT_ADMIN_HASH);
 
@@ -163,7 +163,7 @@ async function handlePasswordChange() {
   }
 }
 
-// ---- Загрузка карточек админки ----
+// ---- Loading admin cards ----
 async function loadAdminCards() {
   if (!sbClient) initSupabase();
 
@@ -245,7 +245,7 @@ async function loadAdminCards() {
   }
 }
 
-// ---- Безопасное обновление статуса через RPC ----
+// ---- Status update RPC ----
 async function processStatus(id, newStatus) {
   if (!sbClient) initSupabase();
 
@@ -257,13 +257,24 @@ async function processStatus(id, newStatus) {
     if (!confirmReject) return; 
   }
 
+  // Получаем IP-адрес админа перед отправкой в базу
+  let adminIp = 'Не определен';
+  try {
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipRes.json();
+    adminIp = ipData.ip;
+  } catch (ipErr) {
+    console.error('Не удалось определить IP админа:', ipErr);
+  }
+
   try {
     const { data: success, error } = await sbClient.rpc('update_statement_status_secure', {
       p_statement_id:   id,
       p_new_status:     newStatus,
       p_comment:        comment,
       p_admin_login:    CURRENT_ADMIN_USER,
-      p_admin_password: CURRENT_ADMIN_HASH
+      p_admin_password: CURRENT_ADMIN_HASH,
+      p_admin_ip:       adminIp // Передаем полученный IP-адрес
     });
 
     if (error) throw error;
