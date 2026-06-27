@@ -1,87 +1,96 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <link rel="icon" type="image/jpg" href="favicon.jpg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Авторизация | Панель Лидера</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="admin.js" defer></script>
+  
   <style>
     .login-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: #0a0a0a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       z-index: 9999;
     }
     .login-box {
       background: #111;
       border: 2px solid #C9A24B;
-      padding: 30px;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 350px;
+      padding: 30px; border-radius: 8px;
+      width: 100%; max-width: 350px;
       text-align: center;
     }
     .login-box input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      background: #222;
-      border: 1px solid #444;
-      color: #fff;
-      border-radius: 4px;
-      box-sizing: border-box;
+      width: 100%; padding: 10px; margin: 10px 0;
+      background: #222; border: 1px solid #444;
+      color: #fff; border-radius: 4px; box-sizing: border-box;
     }
     .login-box button {
-      width: 100%;
-      background: #C9A24B;
-      color: #000;
-      border: none;
-      padding: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 4px;
-      margin-top: 10px;
+      width: 100%; background: #C9A24B; color: #000;
+      border: none; padding: 12px; font-weight: bold;
+      cursor: pointer; border-radius: 4px; margin-top: 10px;
       transition: 0.2s;
     }
     .login-box button:hover { background: #b08e3e; }
     .error-msg { color: #e74c3c; font-size: 14px; margin-top: 5px; display: none; }
 
-    .admin-container { max-width: 1100px; margin: 40px auto; padding: 20px; background: rgba(20, 20, 20, 0.98); border: 2px solid #C9A24B; border-radius: 8px; }
-    .statement-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; margin-bottom: 25px; border-radius: 6px; position: relative; }
-    .statement-card.border-waiting { border-left: 5px solid #f39c12; }
+    .admin-container {
+      max-width: 1100px; margin: 40px auto; padding: 20px;
+      background: rgba(20,20,20,0.98); border: 2px solid #C9A24B; border-radius: 8px;
+    }
+    .statement-card {
+      background: #1a1a1a; border: 1px solid #333;
+      padding: 20px; margin-bottom: 25px; border-radius: 6px; position: relative;
+    }
+    .statement-card.border-waiting  { border-left: 5px solid #f39c12; }
     .statement-card.border-approved { border-left: 5px solid #2ecc71; }
     .statement-card.border-rejected { border-left: 5px solid #e74c3c; }
-    .card-header { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; }
+    .card-header {
+      display: flex; justify-content: space-between;
+      border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;
+    }
     .candidate-info span { margin-right: 15px; font-size: 15px; }
     .question-block { margin-bottom: 12px; background: #111; padding: 10px; border-radius: 4px; }
     .question-title { color: #C9A24B; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
     .answer-text { color: #eee; font-size: 15px; white-space: pre-wrap; }
     .admin-actions { display: flex; gap: 10px; margin-top: 15px; align-items: center; flex-wrap: wrap; }
-    .comment-input { flex: 1; min-width: 250px; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; }
+    .comment-input {
+      flex: 1; min-width: 250px; padding: 10px;
+      background: #222; border: 1px solid #444; color: #fff; border-radius: 4px;
+    }
     .btn-approve { background-color: #2ecc71; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .btn-reject { background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn-reject  { background-color: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .status-text { font-weight: bold; text-transform: uppercase; }
   </style>
 </head>
 <body>
 
-  <!-- ОКНО ВХОДА -->
+  <!-- ФОРМА АВТОРИЗАЦИИ -->
   <div class="login-overlay" id="loginOverlay">
     <div class="login-box">
       <h3 style="color: #C9A24B; margin-bottom: 20px;">Вход в Админ-Панель</h3>
-      <input type="text" id="username" placeholder="Логин (Ник-Нейм)">
-      <input type="password" id="password" placeholder="Пароль">
+      <input type="text"     id="username" placeholder="Логин (Ник-Нейм)" autocomplete="username">
+      <input type="password" id="password" placeholder="Пароль"           autocomplete="current-password">
       <div class="error-msg" id="errorMsg">Неверный логин или пароль!</div>
       <button onclick="handleLogin()">Войти в систему</button>
     </div>
   </div>
 
-  <!-- КОНТЕНТ АДМИНКИ -->
+  <!-- ОКНО СМЕНЫ ПАРОЛЯ -->
+  <div id="changePassOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; justify-content: center; align-items: center; z-index: 9999;">
+    <div class="login-box" style="box-shadow: 0 0 25px rgba(201,162,75,0.35);">
+      <h3 style="color: #C9A24B; margin-bottom: 10px;">Первый вход</h3>
+      <p style="color: #888; font-size: 13px; margin-bottom: 20px;">Придумайте ваш постоянный пароль:</p>
+      <input type="password" id="newPassword" placeholder="Новый пароль">
+      <button onclick="handlePasswordChange()">Сохранить пароль</button>
+    </div>
+  </div>
+
+  <!-- ADMIN CONTENT -->
   <div id="adminContent" style="display: none;">
     <div style="text-align: center; margin-top: 20px;">
       <a href="statements.html" style="color: #C9A24B; text-decoration: none;">← К таблице статусов</a>
@@ -90,13 +99,11 @@
     <div class="admin-container">
       <h2 style="color: #C9A24B; text-align: center; margin-bottom: 5px;">Кабинет Проверки Анкет Юристов</h2>
       <p style="text-align: center; color: #888; margin-bottom: 30px;">Модерация поступающих заявлений в режиме реального времени</p>
-      
+
       <div id="admin-loading" style="text-align:center; color:#C9A24B; font-size:18px;">Загрузка анкет из базы данных...</div>
-      
       <div id="cards-container"></div>
     </div>
   </div>
 
-  <script src="admin.js"></script>
 </body>
 </html>

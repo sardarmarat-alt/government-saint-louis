@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<link rel="icon" type="image/jpg" href="favicon.jpg">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
         <span class="brand-sub">State of Saint Louis</span>
       </div>
     </div>
-    <nav class="nav">
+    <nav class="nav" id="main-nav">
       <a href="#structure" class="nav-link">Структура</a>
       <a href="#leadership" class="nav-link">Руководство</a>
       <a href="#departments" class="nav-link">Министерства</a>
@@ -31,7 +31,7 @@
       <a href="#contacts" class="nav-link">Контакты</a>
       <a href="statements.html" class="nav-link" style="color: #C9A24B; font-weight: bold;">Статусы заявлений</a>
     </nav>
-    <button class="burger" id="burger" aria-label="Открыть меню">
+    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -45,12 +45,12 @@
     <h1 class="hero-title">Government<br>Saint&nbsp;Louis</h1>
     <p class="hero-motto">«Свобода. Братство. Равенство.»</p>
     <p class="hero-desc">
-      Официальный портал правительства. Здесь публикуются постонавления губернатора,
-      структура органов власти, контакты министерств, форма обращения граждан и новости штата.
+      Официальный портал правительства. Здесь публикуются структура органов власти,
+      контакты министерств, форма обращения граждан и новости штата.
     </p>
     <div class="hero-actions">
       <a href="#apply" class="btn btn-primary">Подать заявку на Юриста</a>
-      <a href="#decrees" class="btn btn-ghost">Постановления губернатора</a>
+      <a href="#structure" class="btn btn-ghost">Структура правительства</a>
     </div>
   </div>
 </section>
@@ -117,71 +117,75 @@
     <div class="staff-grid">
       <article class="staff-card">
         <div class="staff-photo">
-    <img src="images/governor.jpg" alt="Марат Сардар">
-</div>
+          <img src="images/governor.jpg" alt="Marat Sardar">
+        </div>
         <h3 class="staff-name">Marat Sardar</h3>
         <p class="staff-role">Governor</p>
         <p class="staff-info">В должности с: 14.06.2026<br>VK: @username</p>
       </article>
+
       <article class="staff-card">
-  <div class="staff-photo">
-    <img src="images/deputy.jpg" alt="Crum Hudson" class="deputy-img">
-  </div>
-  
-  <h3 class="staff-name">Crum Hudson</h3>
-  <p class="staff-role">Deputy Governor</p>
-  <p class="staff-info">В должности с: 21.06.2026<br>VK: @username</p>
-</article>
-      <article class="staff-card">
-  <div class="staff-photo">
-    <img src="images/finance.jpg" alt="Andriy Pastor" class="finance-img">
-  </div>
-    <h3 class="staff-name">Andrey Pastor</h3>
-    <p class="staff-role">Minister of Finance</p>
-    <p class="staff-info">В должности с: 12.05.2026<br>VK: @username</p>
+        <div class="staff-photo">
+          <img src="images/deputy.jpg" alt="Crum Hudson" class="deputy-img">
+        </div>
+        <h3 class="staff-name">Crum Hudson</h3>
+        <p class="staff-role">Deputy Governor</p>
+        <p class="staff-info">В должности с: 21.06.2026<br>VK: @username</p>
       </article>
-  <article class="staff-card">
-    <div class="staff-photo">
-        <img src="images/justice.jpg" alt="Christian Ruthellss" class="justice-img">
-    </div>
-    <h3 class="staff-name">Christian Ruthellss</h3>
-    <p class="staff-role">Minister of Justice</p>
-    <p class="staff-info">В должности с: 15.06.2026<br>VK: @username</p>
-</article>
-  <article class="staff-card">
-    <div class="staff-photo">
-        <img src="images/security.jpg" alt="Lucky Grek" class="security-img">
-    </div>
-    <h3 class="staff-name">Lucky Grek</h3>
-    <p class="staff-role">Minister of State Security</p>
-    <p class="staff-info">В должности с: 24.06.2026<br>VK: @username</p>
-</article>
-  <article class="staff-card">
-    <div class="staff-photo">
-        <img src="images/info.jpg" alt="Loli Molika" class="info-img">
-    </div>
-    <h3 class="staff-name">Loli Molika</h3>
-    <p class="staff-role">Minister of Information and Communication</p>
-    <p class="staff-info">В должности с: 31.05.2026<br>VK: @username</p>
-</article>
-<article class="staff-card">
-    <div class="staff-photo">
-        <img src="images/social.jpg" alt="Josep Westwood" class="social-img">
-    </div>
-    <h3 class="staff-name">Josep Westwood</h3>
-    <p class="staff-role">Minister of Social Affairs</p>
-    <p class="staff-info">В должности с: 17.06.2026<br>VK: @username</p>
-</article>
+
+      <article class="staff-card">
+        <div class="staff-photo">
+          <img src="images/finance.jpg" alt="Andrey Pastor" class="finance-img">
+        </div>
+        <h3 class="staff-name">Andrey Pastor</h3>
+        <p class="staff-role">Minister of Finance</p>
+        <p class="staff-info">В должности с: 12.05.2026<br>VK: @username</p>
+      </article>
+
+      <article class="staff-card">
+        <div class="staff-photo">
+          <img src="images/justice.jpg" alt="Christian Ruthellss" class="justice-img">
+        </div>
+        <h3 class="staff-name">Christian Ruthellss</h3>
+        <p class="staff-role">Minister of Justice</p>
+        <p class="staff-info">В должности с: 15.06.2026<br>VK: @username</p>
+      </article>
+
+      <article class="staff-card">
+        <div class="staff-photo">
+          <img src="images/security.jpg" alt="Lucky Grek" class="security-img">
+        </div>
+        <h3 class="staff-name">Lucky Grek</h3>
+        <p class="staff-role">Minister of State Security</p>
+        <p class="staff-info">В должности с: 24.06.2026<br>VK: @username</p>
+      </article>
+
+      <article class="staff-card">
+        <div class="staff-photo">
+          <img src="images/info.jpg" alt="Loli Molika" class="info-img">
+        </div>
+        <h3 class="staff-name">Loli Molika</h3>
+        <p class="staff-role">Minister of Information and Communication</p>
+        <p class="staff-info">В должности с: 31.05.2026<br>VK: @username</p>
+      </article>
+
+      <article class="staff-card">
+        <div class="staff-photo">
+          <img src="images/social.jpg" alt="Josep Westwood" class="social-img">
+        </div>
+        <h3 class="staff-name">Josep Westwood</h3>
+        <p class="staff-role">Minister of Social Affairs</p>
+        <p class="staff-info">В должности с: 17.06.2026<br>VK: @username</p>
+      </article>
     </div>
   </div>
 </section>
 
-
 <!-- ====================== DEPARTMENTS ====================== -->
-<section id="departments" class="section alt">
+<section id="departments" class="section">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">04 · Подразделения</span>
+      <span class="eyebrow">03 · Подразделения</span>
       <h2>Министерства</h2>
       <p class="section-desc">Основные направления деятельности правительства.</p>
     </div>
@@ -201,71 +205,66 @@
       </article>
       <article class="dept-card">
         <h3>Департамент государственной безопасности</h3>
-        <p>Государственная безопасность, противoдействие терроризму и организованной преступности.</p>
+        <p>Государственная безопасность, противодействие терроризму и организованной преступности.</p>
       </article>
       <article class="dept-card">
         <h3>Министерство социальной политики</h3>
         <p>Социальная защита, здравоохранение, образование и культура.</p>
+      </article>
     </div>
   </div>
 </section>
 
 <!-- ====================== APPLY ====================== -->
-<section id="apply" class="section">
-  <div class="apply-box">
-    <h3>Онлайн-заявление на должность Юриста</h3>
-    <form id="statement-form" class="interactive-form"> 
-      <div class="form-group">
-        <label for="char-name">Имя и Фамилия (Nick Name):</label>
-        <input type="text" id="char-name" name="charName" required placeholder="Ivan Ivanov">
-      </div>
-
-      <div class="form-group">
-        <label for="char-age">Время проживания в штате (лет):</label>
-        <input type="number" id="char-age" name="charAge" required placeholder="25">
-      </div>
-
-      <div class="form-group">
-        <label for="vk-tag">Связь (VK):</label>
-        <input type="text" id="vk-tag" name="vk" required placeholder="username">
-      </div>
-
-      <div class="form-group">
-        <label for="bio">Краткая биография / Опыт работы:</label>
-        <textarea id="bio" name="biography" rows="4" required placeholder="Расскажите о себе..."></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="about-oop">Что такое ООП и где оно регламентируется:</label>
-        <textarea id="about-oop" name="aboutoop" rows="4" required placeholder="В каких законодательных документах можно найти информацию"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="what-oop">За нарушение каких статей присваивается статус ООП:</label>
-        <textarea id="what-oop" name="whatoop" rows="4" required placeholder="Приведите хотя бы 3 примера"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="oop-order">Назовите правильный порядок проверки заключённого на наличие статуса ООП</label>
-        <textarea id="oop-order" name="oopOrder" rows="4" required placeholder="Очередность действий"></textarea>
-      </div>
-      
-      <button type="submit" class="btn btn-primary">Отправить заявление</button>
-    </form>
-    <div id="form-message" class="form-message"></div>
+<section id="apply" class="section alt">
+  <div class="container">
+    <div class="apply-box">
+      <h3>Онлайн-заявление на должность Юриста</h3>
+      <form id="statement-form" class="interactive-form">
+        <div class="form-group">
+          <label for="char-name">Имя и Фамилия (Nick Name):</label>
+          <input type="text" id="char-name" name="charName" required placeholder="Ivan Ivanov">
+        </div>
+        <div class="form-group">
+          <label for="char-age">Время проживания в штате (лет):</label>
+          <input type="number" id="char-age" name="charAge" required placeholder="25" min="0" max="99">
+        </div>
+        <div class="form-group">
+          <label for="vk-tag">Связь (VK):</label>
+          <input type="text" id="vk-tag" name="vk" required placeholder="username">
+        </div>
+        <div class="form-group">
+          <label for="bio">Краткая биография / Опыт работы:</label>
+          <textarea id="bio" name="biography" rows="4" required placeholder="Расскажите о себе..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="about-oop">Что такое ООП и где оно регламентируется:</label>
+          <textarea id="about-oop" name="aboutoop" rows="4" required placeholder="В каких законодательных документах можно найти информацию"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="what-oop">За нарушение каких статей присваивается статус ООП:</label>
+          <textarea id="what-oop" name="whatoop" rows="4" required placeholder="Приведите хотя бы 3 примера"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="oop-order">Назовите правильный порядок проверки заключённого на наличие статуса ООП:</label>
+          <textarea id="oop-order" name="oopOrder" rows="4" required placeholder="Очередность действий"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить заявление</button>
+      </form>
+      <div id="form-message" class="form-message"></div>
+    </div>
   </div>
 </section>
 
-<!-- ====================== State Coins Goss Event ====================== -->
-
+<!-- ====================== EVENT ====================== -->
 <section id="event" class="section">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">Особое Мероприятие</span>
+      <span class="eyebrow">04 · Особое Мероприятие</span>
       <h2>Межведомственный Турнир Штата</h2>
       <p class="section-desc">Масштабные соревнования среди государственных организаций Saint Louis.</p>
     </div>
-    
+
     <div class="dept-grid">
       <article class="dept-card" style="border-top-color: #4caf50;">
         <h3>Призовой фонд</h3>
@@ -276,7 +275,7 @@
         <p>1. Ежедневные задания от правительства<br>2. Межфракционные бои<br>3. Опасные задания для фракций</p>
       </article>
     </div>
-    
+
     <div style="margin-top: 30px; text-align: center;">
       <a href="#apply-event" class="btn btn-ghost">Регистрация ведомства</a>
     </div>
@@ -287,7 +286,7 @@
 <section id="contacts" class="section alt">
   <div class="container">
     <div class="section-head">
-      <span class="eyebrow">06 · Связь</span>
+      <span class="eyebrow">05 · Связь</span>
       <h2>Контакты</h2>
     </div>
 
@@ -300,6 +299,7 @@
         <span class="contact-label">Discord</span>
         <a href="#">discord.gg/example</a>
       </div>
+    </div>
   </div>
 </section>
 

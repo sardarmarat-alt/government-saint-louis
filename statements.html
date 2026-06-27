@@ -1,61 +1,25 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <link rel="icon" type="image/jpg" href="favicon.jpg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Список заявлений | Правительство</title>
-  <link rel="stylesheet" href="style.css"> <!-- Твой файл стилей -->
-  <div style="text-align: center; margin-top: 20px;">
-  <a href="index.html" style="color: #fff; text-decoration: none; margin-right: 20px;">← Вернуться к форме подачи</a>
-</div>
-  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    
-    .statements-container {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 20px;
-      background: rgba(26, 26, 26, 0.95);
-      border: 1px solid #C9A24B;
-      border-radius: 8px;
-    }
-    .statements-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      color: #fff;
-    }
-    .statements-table th, .statements-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #333;
-    }
-    .statements-table th {
-      background-color: #111;
-      color: #C9A24B;
-    }
-    .status-badge {
-      padding: 5px 10px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-    .status-waiting { background-color: #f39c12; color: #fff; }
-    .status-approved { background-color: #2ecc71; color: #fff; }
-    .status-rejected { background-color: #e74c3c; color: #fff; }
-    .loading-text { color: #C9A24B; text-align: center; font-size: 18px; }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
 
+  <div style="text-align: center; margin-top: 24px;">
+    <a href="index.html" style="color: #C9A24B; text-decoration: none; font-family: sans-serif;">← Вернуться к форме подачи</a>
+  </div>
+
   <div class="statements-container">
     <h2 style="color: #C9A24B; text-align: center;">Поданные заявления на должность Юриста</h2>
-    <p style="text-align: center; color: #aaa;">Здесь отображаются текущие статусы рассмотрения ваших анкет</p>
-    
-    <div id="loading" class="loading-text">Загрузка данных из базы...</div>
-    
+    <p style="text-align: center; color: #aaa; margin-top: 8px;">Здесь отображаются текущие статусы рассмотрения ваших анкет</p>
+
+    <div id="loading" class="loading-text" style="margin-top: 20px;">Загрузка данных из базы...</div>
+
     <table class="statements-table" id="statements-table" style="display: none;">
       <thead>
         <tr>
@@ -66,20 +30,19 @@
           <th>Ответ руководства</th>
         </tr>
       </thead>
-      <tbody id="statements-tbody">
-        
-      </tbody>
+      <tbody id="statements-tbody"></tbody>
     </table>
 
     <div id="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px;"></div>
   </div>
 
-  <script src="statements.js"></script>
   <footer style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid #222;">
-  <p style="color: #555; font-size: 12px;">© 2026 Правительство штата. Все права защищены. 
-    <!-- Скрытая ссылка для админки -->
-    <a href="admin.html" style="color: #222; text-decoration: none; cursor: default;">.</a>
-  </p>
-</footer>
+    <p style="color: #555; font-size: 12px;">
+  © 2026 Правительство штата. Все права защищены.
+  <a href="admin.html" style="color: transparent; user-select: none; cursor: default; text-decoration: none;">·</a>
+</p>
+  </footer>
+
+  <script src="statements.js"></script>
 </body>
 </html>
