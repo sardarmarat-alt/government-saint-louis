@@ -119,7 +119,7 @@ async function handleLogin() {
   }
 }
 
-// ---- Handle password change ----
+// ---- Смена временного пароля ----
 async function handlePasswordChange() {
   if (!sbClient) initSupabase();
 
@@ -129,9 +129,21 @@ async function handlePasswordChange() {
     alert("Пароль должен быть не менее 6 символов!"); 
     return; 
   }
+
+  // ЗАЩИТА: Запрещаем использовать активационный префикс в постоянном пароле
+  if (newPass.startsWith('ACTIVATE_')) {
+    alert("Новый постоянный пароль не должен начинаться со слова ACTIVATE_!");
+    return;
+  }
   
   try {
     const newHash = await sha256(newPass);
+
+    // ЗАЩИТА: Проверяем, не совпадает ли новый хэш со старым временным
+    if (newHash === CURRENT_ADMIN_HASH) {
+      alert("Новый пароль не должен совпадать со старым временным кодом!");
+      return;
+    }
     
     const { data: success, error: rpcError } = await sbClient.rpc('set_new_password', {
       p_login:             CURRENT_ADMIN_USER,
@@ -145,7 +157,6 @@ async function handlePasswordChange() {
       alert("Постоянный пароль успешно установлен!");
       CURRENT_ADMIN_HASH = newHash;
       
-      // save sessionStorage with new hash
       sessionStorage.setItem('admin_user', CURRENT_ADMIN_USER);
       sessionStorage.setItem('admin_hash', CURRENT_ADMIN_HASH);
 
