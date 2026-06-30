@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Государственные Конкурсы | State Coins</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* =============================================
+           BASE
+        ============================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #0c1120;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* =============================================
+           NAVBAR — darker, more official than events-only feel
+        ============================================= */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(12, 17, 32, 0.97);
+            padding: 14px 40px;
+            border-bottom: 1px solid #1e2a45;
+            position: sticky; top: 0; z-index: 50;
+        }
+
+        .navbar-brand {
+            display: flex; align-items: center; gap: 12px;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 17px; font-weight: bold; color: #C9A24B;
+            text-decoration: none;
+        }
+
+        .navbar-brand .brand-seal {
+            width: 34px; height: 34px; border-radius: 50%;
+            border: 2px solid #C9A24B;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 900; color: #C9A24B;
+        }
+
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a {
+            color: #94a3b8; text-decoration: none;
+            font-weight: 500; font-size: 15px; transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: #e2e8f0; }
+
+        .nav-actions { display: flex; gap: 10px; align-items: center; }
+
+        /* Leader auth button — blue/teal, distinct from gold admin */
+        .btn-leader-login {
+            background: linear-gradient(135deg, #1d6fa4, #1353a1);
+            color: #fff; border: none; padding: 9px 20px;
+            font-weight: 600; border-radius: 5px; cursor: pointer;
+            font-size: 14px; transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(29,111,164,0.3);
+        }
+        .btn-leader-login:hover { background: linear-gradient(135deg, #1a8fcf, #1562c4); }
+        .btn-leader-logout {
+            background: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b;
+            padding: 9px 20px; font-weight: 600; border-radius: 5px; cursor: pointer;
+            font-size: 14px; display: none; transition: all 0.2s;
+        }
+        .btn-leader-logout:hover { background: #991b1b; }
+
+        /* =============================================
+           MAIN CONTAINER
+        ============================================= */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 24px; display: flex; flex-direction: column; gap: 32px; }
+
+        /* =============================================
+           DAILY QUESTION BOX
+        ============================================= */
+        .daily-question-box {
+            background: linear-gradient(135deg, #131b30, #1a2240);
+            border-radius: 10px; padding: 28px 32px;
+            border: 1px solid #2d3a5c;
+            border-left: 5px solid #eab308;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .daily-question-box h2 { color: #eab308; font-size: 20px; margin-bottom: 14px; letter-spacing: 0.3px; }
+        #questionText { font-size: 17px; color: #f1f5f9; line-height: 1.65; }
+
+        .leader-answer-form { display: flex; gap: 12px; margin-top: 20px; max-width: 520px; }
+        .leader-answer-form input {
+            flex: 1; background: #111827; border: 1px solid #2d3a5c; color: #fff;
+            padding: 11px 14px; border-radius: 5px; font-size: 15px; outline: none; transition: border-color 0.2s;
+        }
+        .leader-answer-form input:focus { border-color: #eab308; }
+        .leader-answer-form button {
+            background: #10b981; color: #050505; font-weight: 700; border: none;
+            padding: 11px 22px; border-radius: 5px; cursor: pointer; font-size: 15px; transition: background 0.2s;
+        }
+        .leader-answer-form button:hover { background: #059669; }
+
+        /* =============================================
+           FACTION RATING
+        ============================================= */
+        .section-title {
+            font-size: 22px; color: #f1f5f9; margin-bottom: 18px;
+            border-left: 4px solid #C9A24B; padding-left: 12px;
+        }
+
+        .rating-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        .btn-info {
+            background: #131b30; color: #94a3b8; border: 1px solid #2d3a5c;
+            padding: 9px 18px; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s;
+        }
+        .btn-info:hover { border-color: #C9A24B; color: #C9A24B; }
+
+        .rating-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .faction-card {
+            background: #131b30; padding: 22px; border-radius: 10px; text-align: center;
+            border: 1px solid #1e2a45; transition: all 0.25s;
+        }
+        .faction-card:hover { transform: translateY(-3px); border-color: #2d3a5c; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .faction-card.top-1 { border-color: #eab308; background: linear-gradient(175deg, #1e1a0e, #131b30); }
+        .faction-name { font-size: 18px; font-weight: 700; color: #f8fafc; margin-bottom: 8px; }
+        .faction-card.top-1 .faction-name { color: #eab308; }
+        .sc-amount { font-size: 24px; font-weight: 800; color: #10b981; }
+
+        /* =============================================
+           HISTORY TABLE
+        ============================================= */
+        .history-box {
+            background: #0e1628; border: 1px solid #1e2a45; padding: 22px;
+            border-radius: 10px; display: none;
+        }
+        .history-box h3 { color: #94a3b8; margin-bottom: 14px; font-size: 16px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .history-table th { background: #131b30; color: #64748b; padding: 11px; border-bottom: 2px solid #1e2a45; text-align: left; }
+        .history-table td { padding: 11px; border-bottom: 1px solid #131b30; color: #cbd5e1; }
+
+        /* =============================================
+           LEADER PANEL
+        ============================================= */
+        .leader-panel-box {
+            background: #0e1628; border: 1px solid #1e2a45;
+            border-top: 3px solid #C9A24B;
+            padding: 28px 32px; border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .leader-panel-box h2 { color: #f8fafc; margin-bottom: 20px; font-size: 20px; }
+
+        .form-tabs { display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 1px solid #1e2a45; padding-bottom: 14px; }
+        .form-tabs button {
+            background: #131b30; color: #64748b; border: 1px solid #1e2a45;
+            padding: 9px 20px; cursor: pointer; font-weight: 600; border-radius: 5px; font-size: 14px; transition: all 0.2s;
+        }
+        .form-tabs button.active-tab { background: #C9A24B; color: #0c1120; border-color: #C9A24B; }
+
+        .sc-form { display: flex; flex-direction: column; gap: 14px; max-width: 600px; }
+        .sc-form label { font-weight: 600; color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sc-form input, .sc-form select {
+            background: #111827; border: 1px solid #2d3a5c; color: #fff;
+            padding: 11px 14px; border-radius: 5px; font-size: 14px; outline: none; transition: border-color 0.2s;
+        }
+        .sc-form input:focus, .sc-form select:focus { border-color: #C9A24B; }
+        .sc-form button {
+            background: #C9A24B; color: #0c1120; font-weight: 700; border: none;
+            padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 15px;
+            transition: background 0.2s; align-self: flex-start;
+        }
+        .sc-form button:hover { background: #dcb45d; }
+
+        /* =============================================
+           MODALS — same structure as admin but blue accent
+        ============================================= */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(4px);
+        }
+
+        /* Leader auth modal — blue accent to distinguish from gold admin */
+        .modal-box {
+            background: #0e1628; padding: 36px; border-radius: 10px;
+            width: 360px; display: flex; flex-direction: column; gap: 14px;
+            border: 1px solid #1e2a45;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .modal-box h3 { color: #f8fafc; font-size: 18px; }
+        .modal-box .modal-sub { color: #64748b; font-size: 13px; }
+        .modal-box input {
+            background: #111827; border: 1px solid #2d3a5c; color: #fff;
+            padding: 11px 14px; border-radius: 5px; font-size: 14px; outline: none; width: 100%;
+        }
+        .modal-box input:focus { border-color: #1d6fa4; }
+        .modal-box .btn-primary {
+            background: linear-gradient(135deg, #1d6fa4, #1353a1);
+            color: #fff; border: none; padding: 12px; font-weight: 700;
+            border-radius: 5px; cursor: pointer; font-size: 15px; transition: all 0.2s;
+        }
+        .modal-box .btn-primary:hover { background: linear-gradient(135deg, #1a8fcf, #1562c4); }
+        .modal-box .btn-close {
+            background: transparent; color: #64748b; border: 1px solid #2d3a5c;
+            padding: 10px; font-weight: 600; border-radius: 5px; cursor: pointer; font-size: 14px;
+        }
+        .modal-box .btn-close:hover { border-color: #64748b; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+    <!-- ====================== NAVBAR ====================== -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <div class="brand-seal">GOV</div>
+            Government Saint Louis
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="statements.html">Статусы заявлений</a>
+            <a href="events.html" class="active">Мероприятие (SC)</a>
+        </div>
+        <div class="nav-actions">
+            <button class="btn-leader-login"  id="leaderAuthBtn"   onclick="toggleAuthModal(true)">Вход для Лидеров</button>
+            <button class="btn-leader-logout" id="leaderLogoutBtn" onclick="handleLeaderLogout()">Выйти из панели</button>
+        </div>
+    </nav>
+
+    <!-- ====================== MAIN ====================== -->
+    <div class="container">
+
+        <!-- БЛОК 1. ВОПРОС ДНЯ -->
+        <section class="daily-question-box">
+            <h2>🏆 Интеллектуальный Вопрос Дня</h2>
+            <p id="questionText">Загрузка вопроса...</p>
+            <div id="leaderAnswerZone" class="leader-answer-form" style="display: none;">
+                <input type="text" id="leaderAnswerInput" placeholder="Ваш ответ на вопрос дня...">
+                <button onclick="submitDailyAnswer()">Отправить ответ</button>
+            </div>
+        </section>
+
+        <!-- БЛОК 2. РЕЙТИНГ ФРАКЦИЙ -->
+        <section class="factions-rating">
+            <div class="rating-header">
+                <h2 class="section-title">Рейтинг Организаций — Баланс State Coins</h2>
+                <button class="btn-info" id="toggleHistoryBtn" onclick="toggleHistoryZone()">Подробная информация</button>
+            </div>
+            <div class="rating-grid" id="factionsGrid">
+                <div class="faction-card"><div class="faction-name">Загрузка...</div></div>
+            </div>
+        </section>
+
+        <!-- ИСТОРИЯ ТРАНЗАКЦИЙ (скрыта) -->
+        <section id="historySection" class="history-box">
+            <h3>История транзакций</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Организация</th>
+                        <th>Тип события</th>
+                        <th>Сумма (SC)</th>
+                        <th>Описание</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTbody"></tbody>
+            </table>
+        </section>
+
+        <!-- БЛОК 3. ПАНЕЛЬ ЛИДЕРА -->
+        <section id="leaderPanel" class="leader-panel-box">
+            <h2>Панель управления Лидера фракции</h2>
+
+            <div class="form-tabs">
+                <button id="tabFightBtn" class="active-tab" onclick="switchTab('fight')">Межфракционный бой</button>
+                <button id="tabTaskBtn"  onclick="switchTab('task')">Государственное задание</button>
+            </div>
+
+            <!-- Форма: Межфракционный бой -->
+            <form id="fightForm" class="sc-form" onsubmit="event.preventDefault(); submitFightReport();">
+                <label>Формат боя / тренировки:</label>
+                <input type="text" id="fightDetails" placeholder="Например: Командный бой 5 на 5 на нейтральной территории" required>
+
+                <label>Фонд матча (SC):</label>
+                <input type="number" id="fightFund" value="5000" min="5000" required>
+
+                <label>Организация-победитель:</label>
+                <select id="fightWinner" required>
+                    <option value="">-- Выберите организацию --</option>
+                </select>
+
+                <label>Доказательства (ссылка на Imgur / Yapx):</label>
+                <input type="url" id="fightEvidence" placeholder="https://imgur.com/..." required>
+
+                <button type="submit">Направить на рассмотрение</button>
+            </form>
+
+            <!-- Форма: Государственное задание -->
+            <form id="taskForm" class="sc-form" style="display: none;" onsubmit="event.preventDefault(); submitTaskReport();">
+                <label>Выполненное государственное задание:</label>
+                <input type="text" id="taskDetails" placeholder="Например: Поставка боеприпасов / Сопровождение кортежа" required>
+
+                <label>Доказательства выполнения (ссылка на Imgur / Yapx):</label>
+                <input type="url" id="taskEvidence" placeholder="https://imgur.com/..." required>
+
+                <button type="submit">Направить на рассмотрение</button>
+            </form>
+        </section>
+
+    </div>
+
+    <!-- МОДАЛ: ВХОД ЛИДЕРА — blue accent -->
+    <div id="authModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3>Вход в панель лидера фракции</h3>
+            <p class="modal-sub">Доступ только для уполномоченных представителей организаций.</p>
+            <input type="text"     id="leaderLogin" placeholder="Логин (например: Leader_SFPD)" autocomplete="username">
+            <input type="password" id="leaderPass"  placeholder="Пароль"                        autocomplete="current-password">
+            <button class="btn-primary" onclick="handleLeaderLogin()">Войти</button>
+            <button class="btn-close"   onclick="toggleAuthModal(false)">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛ: СМЕНА ВРЕМЕННОГО ПАРОЛЯ -->
+    <div id="changePassModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <h3>Установка постоянного пароля</h3>
+            <p class="modal-sub">Вы вошли по временному коду активации. Установите личный постоянный пароль (минимум 6 символов).</p>
+            <input type="password" id="newLeaderPassword" placeholder="Новый пароль" autocomplete="new-password">
+            <button class="btn-primary" onclick="saveNewLeaderPassword()">Сохранить пароль</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleAuthModal(show) {
+            document.getElementById('authModal').style.display = show ? 'flex' : 'none';
+        }
+        function switchTab(type) {
+            document.getElementById('fightForm').style.display = type === 'fight' ? 'flex' : 'none';
+            document.getElementById('taskForm').style.display  = type === 'task'  ? 'flex' : 'none';
+            document.getElementById('tabFightBtn').classList.toggle('active-tab', type === 'fight');
+            document.getElementById('tabTaskBtn').classList.toggle('active-tab',  type === 'task');
+        }
+    </script>
+    <script src="events.js"></script>
+</body>
+</html>
