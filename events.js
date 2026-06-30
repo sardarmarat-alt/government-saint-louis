@@ -172,7 +172,7 @@ function renderHistoryPage() {
 }
 
 function renderPagination() {
-  // Create or find the pagination container (placed right after the table)
+  // Create or find the pagination container 
   let pag = document.getElementById('historyPagination');
   if (!pag) {
     pag = document.createElement('div');
@@ -185,7 +185,7 @@ function renderPagination() {
       padding: 16px 0 8px;
       flex-wrap: wrap;
     `;
-    // Insert after the table's parent or after historyTbody's table
+    
     const tbody = document.getElementById('historyTbody');
     if (tbody) {
       const table = tbody.closest('table');
@@ -198,7 +198,7 @@ function renderPagination() {
   const totalPages = Math.ceil(allHistory.length / ROWS_PER_PAGE);
   pag.innerHTML = '';
 
-  if (totalPages <= 1) return; // no pagination needed
+  if (totalPages <= 1) return; 
 
   const btnStyle = (active) => `
     background: ${active ? '#C9A24B' : '#1e293b'};

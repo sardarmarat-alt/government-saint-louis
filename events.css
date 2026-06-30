@@ -1,4 +1,4 @@
-/* Основные контейнеры */
+/* Main Container */
 .container {
     max-width: 1100px;
     margin: 40px auto;
@@ -7,7 +7,7 @@
     color: #fff;
 }
 
-/* Карточка вопроса дня */
+/* Daily Question */
 .daily-question-box {
     background: linear-gradient(135deg, #1e1e2f, #252542);
     border-left: 5px solid #ffcc00;
@@ -19,7 +19,7 @@
 .daily-question-box h2 { color: #ffcc00; margin-top:0; }
 .winner-announcement { color: #00ffcc; font-weight: bold; }
 
-/* Сетка рейтинга фракций */
+/* Rating Grid */
 .rating-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -38,7 +38,7 @@
 .faction-card.top-1 { border-color: #ffcc00; background: linear-gradient(to bottom, #2a2a40, #3a321a); }
 .sc-amount { font-size: 24px; font-weight: bold; color: #00ff88; margin-top: 10px; }
 
-/* Панель лидеров */
+/* Leader Panel */
 .leader-panel-box {
     background: #1c1c28;
     padding: 30px;
@@ -54,7 +54,7 @@
 .sc-form input, .sc-form select { background: #2d2d44; color: #fff; border: 1px solid #444; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
 .sc-form button { background: #00ff88; color: #000; font-weight: bold; padding: 12px; border: none; border-radius: 4px; cursor: pointer; }
 
-/* Модальные окна */
+/* Modal */
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 100; }
 .modal-content { background: #222232; padding: 30px; border-radius: 8px; width: 350px; display: flex; flex-direction: column; }
 .modal-content input { background: #111; color: #fff; border: 1px solid #444; padding: 10px; margin-bottom: 15px; }

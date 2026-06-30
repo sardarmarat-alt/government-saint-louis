@@ -270,7 +270,7 @@
             </table>
         </section>
 
-        <!-- БЛОК 3. ПАНЕЛЬ ЛИДЕРА -->
+        <!-- Block 3. Leader Panel -->
         <section id="leaderPanel" class="leader-panel-box">
             <h2>Панель управления Лидера фракции</h2>
 
@@ -279,7 +279,7 @@
                 <button id="tabTaskBtn"  onclick="switchTab('task')">Государственное задание</button>
             </div>
 
-            <!-- Форма: Межфракционный бой -->
+            <!-- Form: Межфракционный бой -->
             <form id="fightForm" class="sc-form" onsubmit="event.preventDefault(); submitFightReport();">
                 <label>Формат боя / тренировки:</label>
                 <input type="text" id="fightDetails" placeholder="Например: Командный бой 5 на 5 на нейтральной территории" required>
@@ -298,7 +298,7 @@
                 <button type="submit">Направить на рассмотрение</button>
             </form>
 
-            <!-- Форма: Государственное задание -->
+            <!-- Form: Государственное задание -->
             <form id="taskForm" class="sc-form" style="display: none;" onsubmit="event.preventDefault(); submitTaskReport();">
                 <label>Выполненное государственное задание:</label>
                 <input type="text" id="taskDetails" placeholder="Например: Поставка боеприпасов / Сопровождение кортежа" required>
@@ -312,7 +312,7 @@
 
     </div>
 
-    <!-- МОДАЛ: ВХОД ЛИДЕРА — blue accent -->
+    <!-- Modal: Leader Login — blue accent -->
     <div id="authModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
             <h3>Вход в панель лидера фракции</h3>
@@ -324,7 +324,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛ: СМЕНА ВРЕМЕННОГО ПАРОЛЯ -->
+    <!-- Modal: Temporary Password Change -->
     <div id="changePassModal" class="modal-overlay" style="display: none;">
         <div class="modal-box">
             <h3>Установка постоянного пароля</h3>
