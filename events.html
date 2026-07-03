@@ -208,6 +208,24 @@
             padding: 10px; font-weight: 600; border-radius: 5px; cursor: pointer; font-size: 14px;
         }
         .modal-box .btn-close:hover { border-color: #64748b; color: #94a3b8; }
+
+        /* =============================================
+           PROGRAM LINK CARD — ссылка на страницу правил SC
+        ============================================= */
+        .program-link-card {
+            background: linear-gradient(135deg, #1a1408, #131b30);
+            border: 1px solid #3a2f14;
+            border-left: 5px solid #C9A24B;
+            border-radius: 10px;
+            padding: 18px 28px;
+            display: flex; justify-content: space-between; align-items: center;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .program-link-card:hover { border-color: #C9A24B; transform: translateY(-2px); }
+        .program-link-card .plc-title { font-size: 17px; font-weight: 700; color: #C9A24B; }
+        .program-link-card .plc-sub { font-size: 13px; color: #64748b; margin-top: 5px; }
+        .program-link-card .plc-arrow { color: #C9A24B; font-size: 22px; transition: transform 0.2s; }
+        .program-link-card:hover .plc-arrow { transform: translateX(4px); }
     </style>
 </head>
 <body>
@@ -222,6 +240,7 @@
             <a href="index.html">Главная</a>
             <a href="statements.html">Статусы заявлений</a>
             <a href="events.html" class="active">Мероприятие (SC)</a>
+            <a href="sc-rules.html">Правила SC</a>
         </div>
         <div class="nav-actions">
             <button class="btn-leader-login"  id="leaderAuthBtn"   onclick="toggleAuthModal(true)">Вход для Лидеров</button>
@@ -231,6 +250,16 @@
 
     <!-- ====================== MAIN ====================== -->
     <div class="container">
+
+        <!-- БЛОК 0. ССЫЛКА НА ПРАВИЛА ПРОГРАММЫ -->
+        <a href="sc-rules.html" class="program-link-card">
+            <div>
+                <div class="plc-title">📋 Правила программы State Coins</div>
+                <div class="plc-sub">Концепция, ежедневные задания, бонусные форматы, магазин привилегий</div>
+            </div>
+            <div class="plc-arrow">→</div>
+        </a>
+
 
         <!-- БЛОК 1. ВОПРОС ДНЯ -->
         <section class="daily-question-box">

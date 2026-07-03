@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Правила программы State Coins | Government Saint Louis</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #0c1120;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(12, 17, 32, 0.97);
+            padding: 14px 40px;
+            border-bottom: 1px solid #1e2a45;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .navbar-brand {
+            display: flex; align-items: center; gap: 12px;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 17px; font-weight: bold; color: #C9A24B;
+            text-decoration: none;
+        }
+        .navbar-brand .brand-seal {
+            width: 34px; height: 34px; border-radius: 50%;
+            border: 2px solid #C9A24B;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 900; color: #C9A24B;
+        }
+        .nav-links { display: flex; gap: 24px; align-items: center; }
+        .nav-links a {
+            color: #94a3b8; text-decoration: none;
+            font-weight: 500; font-size: 15px; transition: color 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: #e2e8f0; }
+
+        /* PAGE HEADER */
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 24px 60px; }
+
+        .page-hero {
+            text-align: center; padding: 48px 24px 36px;
+            border-bottom: 1px solid #1e2a45; margin-bottom: 36px;
+        }
+        .page-hero .seal {
+            width: 64px; height: 64px; border-radius: 50%;
+            border: 2px solid #C9A24B; margin: 0 auto 18px;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; color: #C9A24B; font-weight: 800;
+        }
+        .page-hero .seal span { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; }
+        .page-hero h1 {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 34px; color: #f8fafc; letter-spacing: 1px; margin-bottom: 10px;
+        }
+        .page-hero .subtitle { color: #C9A24B; font-size: 15px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; }
+        .page-hero .season-line { color: #64748b; font-size: 14px; font-style: italic; }
+
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #94a3b8; text-decoration: none; font-size: 14px;
+            margin: 24px 0 0; transition: color 0.2s;
+        }
+        .back-link:hover { color: #C9A24B; }
+
+        /* Reused component styles */
+        .program-stats-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1px; background: #1e2a45; border-radius: 8px; overflow: hidden;
+            border: 1px solid #1e2a45; margin-bottom: 40px;
+        }
+        .program-stat { background: #131b30; padding: 16px 18px; text-align: center; }
+        .program-stat .ps-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+        .program-stat .ps-value { font-size: 16px; font-weight: 800; color: #f1f5f9; }
+        .program-stat.ps-active .ps-value { color: #10b981; }
+
+        .pr-subsection { margin-bottom: 40px; }
+        .pr-subsection h3 {
+            color: #f1f5f9; font-size: 20px; margin-bottom: 8px;
+            border-left: 4px solid #C9A24B; padding-left: 12px;
+        }
+        .pr-subsection .pr-lead { color: #94a3b8; font-size: 14px; margin: 14px 0 18px; line-height: 1.65; }
+
+        .tasks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .task-card {
+            background: #131b30; border: 1px solid #1e2a45; border-left: 4px solid #C9A24B;
+            border-radius: 8px; padding: 16px 18px;
+        }
+        .task-card.tier-danger { border-left-color: #ef4444; }
+        .task-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .task-name { font-weight: 700; color: #f8fafc; font-size: 14.5px; }
+        .task-diff { color: #eab308; font-size: 13px; letter-spacing: 1px; }
+        .task-reward { color: #10b981; font-weight: 800; font-size: 14px; white-space: nowrap; }
+        .task-desc { color: #cbd5e1; font-size: 13.5px; line-height: 1.6; margin-bottom: 10px; }
+        .task-desc.task-example { font-style: italic; color: #94a3b8; }
+        .task-tag { color: #64748b; font-size: 12px; font-style: italic; border-top: 1px solid #1e2a45; padding-top: 8px; }
+
+        .deals-note {
+            background: #1a1408; border: 1px solid #3a2f14; border-left: 4px solid #C9A24B;
+            border-radius: 8px; padding: 16px 20px; color: #cbd5e1; font-size: 14px; line-height: 1.7;
+        }
+        .deals-note strong { color: #C9A24B; }
+        .deals-warn { color: #f87171; font-size: 13px; margin-top: 10px; }
+
+        .store-table-wrap { overflow-x: auto; }
+        .store-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .store-table th { background: #131b30; color: #64748b; padding: 11px; border-bottom: 2px solid #1e2a45; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .store-table td { padding: 12px 11px; border-bottom: 1px solid #131b30; color: #cbd5e1; }
+        .store-table td.privilege-name { color: #f1f5f9; font-weight: 600; }
+        .store-table td.privilege-price { color: #eab308; font-weight: 700; white-space: nowrap; }
+
+        .page-footer {
+            text-align: center; padding-top: 30px; border-top: 1px solid #1e2a45;
+            color: #475569; font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <div class="brand-seal">GOV</div>
+            Government Saint Louis
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="statements.html">Статусы заявлений</a>
+            <a href="events.html">Мероприятие (SC)</a>
+            <a href="sc-rules.html" class="active">Правила SC</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div class="page-hero">
+            <div class="seal">SC<span>STATE COINS</span></div>
+            <h1>Государственный конкурс</h1>
+            <div class="subtitle">Программа State Coins</div>
+            <div class="season-line">Межфракционный турнир для государственных структур · Сезон 2026</div>
+        </div>
+
+
+            <div class="program-stats-bar">
+                <div class="program-stat">
+                    <div class="ps-label">Стартовый баланс</div>
+                    <div class="ps-value">100,000 SC</div>
+                </div>
+                <div class="program-stat">
+                    <div class="ps-label">Валюта</div>
+                    <div class="ps-value">State Coins</div>
+                </div>
+                <div class="program-stat">
+                    <div class="ps-label">Транзакции</div>
+                    <div class="ps-value">Через сайт Government</div>
+                </div>
+                <div class="program-stat ps-active">
+                    <div class="ps-label">Статус сезона</div>
+                    <div class="ps-value">✦ Активен</div>
+                </div>
+            </div>
+
+            <div class="pr-subsection">
+                <h3>📋 Концепция программы</h3>
+                <p class="pr-lead">Каждая государственная структура получает стартовый баланс в 100,000 SC (State Coins). Фракции участвуют в боях, специальных миссиях и ежедневных заданиях, зарабатывая или теряя монеты. Все транзакции между фракциями проходят одобрение Правительства через официальный сайт. По итогам сезона монеты обмениваются на реальные привилегии внутри проекта.</p>
+            </div>
+
+            <div class="pr-subsection">
+                <h3>📅 Ежедневные задания</h3>
+                <p class="pr-lead">Каждый день публикуется набор заданий. Участие добровольное, но только активные фракции имеют шанс накопить достаточно SC для крупных призов.</p>
+                <div class="tasks-grid">
+
+                    <div class="task-card">
+                        <div class="task-card-head">
+                            <span class="task-name">🧠 Интеллектуальная викторина</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◇◇◇◇</span>
+                            <span class="task-reward">+2,500 SC</span>
+                        </div>
+                        <p class="task-desc">Ежедневно на официальном портале публикуется 1 логический вопрос. Фракция, которая первой правильно ответит, получает коины и преимущество участвовать или быть проинформированной первой в предстоящих ежедневных заданиях.</p>
+                        <p class="task-desc task-example">Пример: помимо обычных, есть ещё двое мужчин и одна женщина, но есть и тот, кто побеждает их всех. О чём идёт речь?</p>
+                        <div class="task-tag">⚑ Фракционное задание · думает вся фракция, ответ отправляет лидер</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head">
+                            <span class="task-name">🚧 Тактические учения на танках</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◇◇◇</span>
+                            <span class="task-reward">+15,000 SC</span>
+                        </div>
+                        <p class="task-desc">Вместо стандартного рукопашного боя — бронетанковое сражение на полигоне (маппинг). Две команды по 4 танка, ограниченный боезапас, победитель забирает фонд противника. Фонд выставляется обеими сторонами до начала боя.</p>
+                        <div class="task-tag">⚑ Командное · 8 на 8 · только танки</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head">
+                            <span class="task-name">🔍 Операция «Потерянный губернатор»</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◆◇◇</span>
+                            <span class="task-reward">+20,000 SC</span>
+                        </div>
+                        <p class="task-desc">Губернатор пропал. Последний сигнал зафиксирован в Сан-Фиерро. Фракциям выдаётся только эта информация. Задача: найти и задержать губернатора, скрывающегося в одном из 5 возможных районов. Кто первым доставит его в City Hall — забирает всю награду. FBI контролирует соблюдение правил задержания.</p>
+                        <div class="task-tag">⚑ Любая фракция · одиночка или группа</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head">
+                            <span class="task-name">🕵 Агент внутри</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◆◆◇</span>
+                            <span class="task-reward">+20,000 SC</span>
+                        </div>
+                        <p class="task-desc">Правительство объявляет, что в одной из государственных фракций работает крот — тайный агент, назначенный правительством. Фракции вычисляют агента по косвенным уликам в течение игрового дня. Поймали — коины агента переходят к ним. Агент продержался до конца дня — он получает бонусный пул.</p>
+                        <div class="task-tag">⚑ Все госструктуры</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head">
+                            <span class="task-name">🚁 Конвой под огнём</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◇◇◇</span>
+                            <span class="task-reward">+25,000 SC</span>
+                        </div>
+                        <p class="task-desc">Фракция организует охраняемый конвой из точки A в точку B через всю карту. Другие госструктуры могут попытаться перехватить груз. Конвой везёт «контейнер» (предмет), охрана защищает маршрут. Груз доставлен — организатор получает награду. Перехвачен — коины делятся с перехватчиком.</p>
+                        <div class="task-tag">⚑ Командное · от 5 игроков</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head">
+                            <span class="task-name">⚖️ Ребус</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◆◇◇</span>
+                            <span class="task-reward">+10,000 SC</span>
+                        </div>
+                        <p class="task-desc">Перехваченный, зашифрованный разговор членов ОПГ. Задача — понять схему кодирования, расшифровать разговор, найти местоположение бомбы, обезвредить её и найти самого злоумышленника. Фракция, которая отгадает ребус первой, обезвредит бомбу и захватит нарушителя, получает награду.</p>
+                        <div class="task-tag">⚑ 2 команды по 2–3 игрока</div>
+                    </div>
+
+                    <div class="task-card tier-danger">
+                        <div class="task-card-head">
+                            <span class="task-name">💣 Похищение губернатора</span>
+                        </div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◆◆◆</span>
+                            <span class="task-reward">+30,000 SC</span>
+                        </div>
+                        <p class="task-desc">Опасная операция: фракция-инициатор планирует и исполняет похищение живого губернатора. Правила bad cop обязательны к прочтению — любое нарушение карается FBI самостоятельно, правительство и администрация не вмешиваются. Участники берут все риски на себя. Успешное похищение и удержание 30 минут — максимальная награда сезона.</p>
+                        <div class="task-tag">⚑ Фракция-инициатор · без согласования с FBI</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="pr-subsection">
+                <h3>💡 Бонусные форматы</h3>
+                <p class="pr-lead">Дополнительные мероприятия, которые фракции могут инициировать по объявлению Правительства.</p>
+                <div class="tasks-grid">
+
+                    <div class="task-card">
+                        <div class="task-card-head"><span class="task-name">🏁 Гонка полицейских</span></div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◇◇◇</span>
+                            <span class="task-reward">+8,000 SC</span>
+                        </div>
+                        <p class="task-desc">Соревновательная гонка на полицейских машинах по трассе Лас-Вентурас — Лос-Сантос. Использование оружия запрещено. Первые три финишировавших приносят очки своим фракциям.</p>
+                        <div class="task-tag">⚑ Авто-формат · без оружия</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head"><span class="task-name">🚨 Эвакуация</span></div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◇◇◇◇</span>
+                            <span class="task-reward">+5,000 SC</span>
+                        </div>
+                        <p class="task-desc">В одном из городов объявляется о надвигающейся волне, которая приведёт к трагическим последствиям. Задача — эвакуировать всех людей, находящихся в городе. Организовать сбор в ближайшем аэропорту, далее эвакуировать на «шамале».</p>
+                        <div class="task-tag">⚑ Все фракции · баллы распределяет правительство на своё усмотрение</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head"><span class="task-name">🏰 Захват здания</span></div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◆◇◇</span>
+                            <span class="task-reward">+20,000 SC</span>
+                        </div>
+                        <p class="task-desc">Назначенное здание объявляется нейтральным объектом. Фракции соревнуются в удержании здания в течение 20 минут. Побеждает последняя фракция, державшая объект в момент финала.</p>
+                        <div class="task-tag">⚑ Командное · все фракции</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head"><span class="task-name">🎯 Снайперский турнир</span></div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◇◇◇</span>
+                            <span class="task-reward">+12,000 SC</span>
+                        </div>
+                        <p class="task-desc">Личное первенство среди военных и полицейских снайперов на дальней дистанции. Победитель приносит бонус своей фракции и получает личный титул на форуме.</p>
+                        <div class="task-tag">⚑ Личный зачёт</div>
+                    </div>
+
+                    <div class="task-card">
+                        <div class="task-card-head"><span class="task-name">🗳 Захват сухогруза</span></div>
+                        <div class="task-card-head">
+                            <span class="task-diff">◆◆◆◆◇</span>
+                            <span class="task-reward">+35,000 SC</span>
+                        </div>
+                        <p class="task-desc">Несколько фракций захватывают сухогруз и устанавливают взрывчатку с таймером. Задача остальных — отбить объект и ликвидировать бомбы до истечения времени. Баллы распределяет правительство.</p>
+                        <div class="task-tag">⚑ Все госструктуры</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="pr-subsection">
+                <h3>🤝 Межфракционные сделки</h3>
+                <div class="deals-note">
+                    Фракции вправе самостоятельно договариваться с другими о совместных мероприятиях и боях. <strong>Любая транзакция SC между фракциями требует подтверждения Правительства</strong> через официальный сайт Government. Фонд должен быть одинаковым с обеих сторон.
+                    <div class="deals-warn">⚠ Фракция-организатор несёт полную ответственность за соблюдение правил мероприятия.</div>
+                </div>
+            </div>
+
+            <div class="pr-subsection">
+                <h3>🏪 Магазин привилегий · SC Store</h3>
+                <p class="pr-lead">По итогам сезона лидеры фракций тратят накопленные SC на привилегии. Одобрение — только Администрация проекта.</p>
+                <div class="store-table-wrap">
+                    <table class="store-table">
+                        <thead>
+                            <tr>
+                                <th>Привилегия</th>
+                                <th>Цена</th>
+                                <th>Примечание</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="privilege-name">🌴 Выходной без санкций</td>
+                                <td class="privilege-price">XXX,XXX SC</td>
+                                <td>1 раз за сезон — для конкретного игрока из фракции или всей фракции целиком (цена уточняется)</td>
+                            </tr>
+                            <tr>
+                                <td class="privilege-name">✖2 Снятие выговора x2</td>
+                                <td class="privilege-price">50,000 SC</td>
+                                <td>Все сотрудники могут снять выговор за 2 отработки вместо стандартных. Действует 1 день, купить можно 1 раз</td>
+                            </tr>
+                            <tr>
+                                <td class="privilege-name">💰 Конвертация в виртуальные</td>
+                                <td class="privilege-price">1 SC = 40 / 30 вирт</td>
+                                <td>Топ-1 фракция — курс 1:40, остальные — 1:30</td>
+                            </tr>
+                            <tr>
+                                <td class="privilege-name">🏆 Форумный title</td>
+                                <td class="privilege-price">Top 1</td>
+                                <td>Для самой активной фракции — на усмотрение губернатора</td>
+                            </tr>
+                            <tr>
+                                <td class="privilege-name">🏆 Кастомный скин / аксессуар</td>
+                                <td class="privilege-price">Top 1</td>
+                                <td>Для самой активной фракции — на усмотрение губернатора</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        <a href="events.html" class="back-link">← Вернуться к рейтингу и мероприятию</a>
+
+        <div class="page-footer" style="margin-top: 40px;">
+            © Государственные структуры · Evolve Saint Louis · 2026
+        </div>
+
+    </div>
+</body>
+</html>
