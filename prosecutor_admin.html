@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ-панель Прокуратуры | Government</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+  body {
+    background: #0a0e14;
+    color: #e5e7eb;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+  h1 { color: #C9A24B; font-size: 24px; margin-bottom: 4px; }
+  .subtitle { color: #888; margin-bottom: 30px; }
+
+  .login-box {
+    max-width: 380px; margin: 80px auto; padding: 30px;
+    background: #11151d; border: 1px solid #2a2f3a; border-radius: 8px;
+  }
+  .login-box h2 { color: #C9A24B; text-align: center; margin-top: 0; }
+  .login-box input {
+    width: 100%; padding: 10px; margin: 8px 0; border-radius: 4px;
+    border: 1px solid #333; background: #0a0e14; color: #fff; box-sizing: border-box;
+  }
+  .login-box button {
+    width: 100%; padding: 10px; margin-top: 10px; border: none; border-radius: 4px;
+    background: #C9A24B; color: #000; font-weight: bold; cursor: pointer;
+  }
+  #errorMsg { color: #e74c3c; text-align: center; margin-top: 10px; display: none; }
+
+  .tab-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+  .tab-btn {
+    padding: 10px 18px; background: #11151d; border: 1px solid #2a2f3a; color: #ccc;
+    border-radius: 6px; cursor: pointer; font-weight: 600;
+  }
+  .tab-btn.active { background: #C9A24B; color: #000; border-color: #C9A24B; }
+
+  .card {
+    background: #11151d; border: 1px solid #2a2f3a; border-radius: 8px;
+    padding: 18px; margin-bottom: 16px;
+  }
+  .card-header { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+  .field { margin-bottom: 8px; }
+  .field-label { color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .field-value { color: #e5e7eb; }
+  .badge { padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+  .badge-waiting  { background: rgba(243,156,18,0.15); color: #f39c12; border: 1px solid #f39c12; }
+  .badge-approved { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+  .badge-rejected { background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid #e74c3c; }
+
+  .actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .btn-approve, .btn-reject {
+    padding: 8px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: #fff;
+  }
+  .btn-approve { background: #2ecc71; }
+  .btn-reject  { background: #e74c3c; }
+  .comment-input {
+    width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #333;
+    background: #0a0e14; color: #fff; box-sizing: border-box; margin-top: 8px;
+  }
+  .no-access {
+    color: #f39c12; background: rgba(243,156,18,0.1); border: 1px solid #f39c12;
+    padding: 12px; border-radius: 6px; margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginOverlay" class="login-box">
+  <h2>Прокуратура — вход</h2>
+  <input type="text" id="username" placeholder="Логин">
+  <input type="password" id="password" placeholder="Пароль">
+  <button onclick="handleLogin()">Войти в систему</button>
+  <div id="errorMsg">Неверный логин или пароль.</div>
+</div>
+
+<!-- FIRST-LOGIN PASSWORD CHANGE -->
+<div id="changePassOverlay" class="login-box" style="display:none;">
+  <h2>Смена временного пароля</h2>
+  <p style="color:#f39c12; text-align:center; font-size:14px;">
+    Это временный пароль. Установите постоянный, чтобы продолжить.
+  </p>
+  <input type="password" id="newPassword" placeholder="Новый пароль (минимум 6 символов)">
+  <button onclick="handlePasswordChange()">Установить пароль</button>
+</div>
+
+<!-- ADMIN CONTENT -->
+<div class="container" id="adminContent" style="display:none;">
+  <h1>Админ-панель Прокуратуры</h1>
+  <p class="subtitle">Заявления на стажировку и материалы на санкции</p>
+
+  <div id="accessNotice"></div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-applications" onclick="switchTab('applications')">Заявления на стажировку</button>
+    <button class="tab-btn" id="tab-sanctions" onclick="switchTab('sanctions')">Материалы на санкции</button>
+  </div>
+
+  <div id="applications-panel"></div>
+  <div id="sanctions-panel" style="display:none;"></div>
+</div>
+
+<script src="prosecutor_admin.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Список заявлений | Правительство</title>
+  <title>Статусы заявлений на стажировку | Прокуратура</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -11,27 +11,26 @@
 <body>
 
   <div style="text-align: center; margin-top: 24px;">
-    <a href="index.html" style="color: #C9A24B; text-decoration: none; font-family: sans-serif;">← Вернуться к форме подачи</a>
+    <a href="prosecutors.html" style="color: #C9A24B; text-decoration: none; font-family: sans-serif;">← Вернуться на страницу прокуратуры</a>
   </div>
 
   <div class="statements-container">
-    <h2 style="color: #C9A24B; text-align: center;">Поданные заявления на должность Юриста</h2>
-    <p style="text-align: center; color: #aaa; margin-top: 8px;">Здесь отображаются текущие статусы рассмотрения ваших анкет</p>
+    <h2 style="color: #C9A24B; text-align: center;">Заявления на стажировку в прокуратуре</h2>
+    <p style="text-align: center; color: #aaa; margin-top: 8px;">Здесь отображаются текущие статусы рассмотрения ваших заявлений</p>
 
     <div id="loading" class="loading-text" style="margin-top: 20px;">Загрузка данных из базы...</div>
 
-    <table class="statements-table" id="statements-table" style="display: none;">
+    <table class="statements-table" id="applications-table" style="display: none;">
       <thead>
         <tr>
           <th>Дата подачи</th>
           <th>Имя Фамилия</th>
           <th>Лет в штате</th>
           <th>Статус</th>
-          <th>Собеседование</th>
           <th>Ответ руководства</th>
         </tr>
       </thead>
-      <tbody id="statements-tbody"></tbody>
+      <tbody id="applications-tbody"></tbody>
     </table>
 
     <div id="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 25px;"></div>
@@ -39,11 +38,11 @@
 
   <footer style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid #222;">
     <p style="color: #555; font-size: 12px;">
-  © 2026 Правительство штата. Все права защищены.
-  <a href="admin.html" style="color: transparent; user-select: none; cursor: default; text-decoration: none;">·</a>
-</p>
+      © 2026 Правительство штата. Все права защищены.
+      <a href="prosecutor_admin.html" style="color: transparent; user-select: none; cursor: default; text-decoration: none;">·</a>
+    </p>
   </footer>
 
-  <script src="statements.js"></script>
+  <script src="prosecutor_applications_status.js"></script>
 </body>
 </html>

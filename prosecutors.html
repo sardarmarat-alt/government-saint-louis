@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Прокуратура | Government</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+
+<!-- ====================== HEADER ====================== -->
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand">
+      <div class="seal">GOV</div>
+      <div class="brand-text">
+        <span class="brand-title">Government</span>
+        <span class="brand-sub">State of Saint Louis</span>
+      </div>
+    </div>
+    <nav class="nav" id="main-nav">
+      <a href="index.html">Главная</a>
+      <a href="#info" class="nav-link">О прокуратуре</a>
+      <a href="#structure" class="nav-link">Структура</a>
+      <a href="#apply" class="nav-link">Стажировка</a>
+      <a href="#cabinet" class="nav-link">Кабинет прокурора</a>
+      <a href="prosecutor_applications_status.html" class="nav-link">Статусы стажировки</a>
+      <a href="prosecutor_statements.html" class="nav-link">Статусы санкций</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ====================== HERO ====================== -->
+<section class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <div class="hero-seal">GOV</div>
+    <h1 class="hero-title">Прокуратура<br>Saint&nbsp;Louis</h1>
+    <p class="hero-motto">«Закон один для всех.»</p>
+    <p class="hero-desc">
+      Надзорный орган правительства штата: контроль за соблюдением законности
+      сотрудниками силовых структур и вынесение санкций за нарушения.
+    </p>
+    <div class="hero-actions">
+      <a href="#apply" class="btn btn-primary">Подать заявку на стажировку</a>
+      <a href="#structure" class="btn btn-ghost">Структура прокуратуры</a>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== GENERAL INFO ====================== -->
+<section id="info" class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">01 · Общая информация</span>
+      <h2>Что такое прокуратура</h2>
+      <p class="section-desc">
+        Прокуратура штата осуществляет надзор за законностью действий сотрудников
+        силовых структур и рассматривает материалы о наложении санкций на
+        нарушителей. Работа прокуратуры строится на строгой иерархии — каждая
+        должность обладает своим набором прав и обязанностей.
+      </p>
+    </div>
+
+    <div class="dept-grid">
+      <article class="dept-card">
+        <h3>Приём стажёров</h3>
+        <p>Кандидаты подают заявление, проходят программу подготовки и сдают её Главному прокурору на утверждение.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Надзор за законностью</h3>
+        <p>Действующие прокуроры выявляют нарушения среди сотрудников силовых структур и оформляют материалы дела.</p>
+      </article>
+      <article class="dept-card">
+        <h3>Вынесение санкций</h3>
+        <p>Материалы о санкциях рассматриваются и утверждаются Главным прокурором либо отклоняются с обоснованием.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== STRUCTURE ====================== -->
+<section id="structure" class="section alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">02 · Иерархия</span>
+      <h2>Структура прокуратуры</h2>
+      <p class="section-desc">Пять должностей, от стажёра до главного прокурора.</p>
+    </div>
+
+    <div class="hierarchy">
+      <div class="hierarchy-row">
+        <div class="hierarchy-card top">
+          <span class="rank">Генеральный прокурор</span>
+          <span class="rank-en">Head Prosecutor</span>
+        </div>
+      </div>
+      <div class="hierarchy-row">
+        <div class="hierarchy-card">
+          <span class="rank">Заместитель главного прокурора</span>
+          <span class="rank-en">Vice Head Prosecutor</span>
+        </div>
+      </div>
+      <div class="hierarchy-row">
+        <div class="hierarchy-card">
+          <span class="rank">Старший прокурор</span>
+          <span class="rank-en">Senior Prosecutor</span>
+        </div>
+      </div>
+      <div class="hierarchy-row">
+        <div class="hierarchy-card">
+          <span class="rank">Прокурор</span>
+          <span class="rank-en">Prosecutor</span>
+        </div>
+      </div>
+      <div class="hierarchy-row">
+        <div class="hierarchy-card muted">
+          <span class="rank">Стажёр</span>
+          <span class="rank-en">Trainee</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Права и обязанности — заполните под свою систему -->
+    <div style="overflow-x:auto; margin-top:40px;">
+      <table class="statements-table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>Должность</th>
+            <th>Права</th>
+            <th>Обязанности</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><b>Стажёр</b></td><td><i>Передать материаллы дел прокурорам и выше на рассмотрение</i></td><td>Прохождение программы подготовки</td></tr>
+          <tr><td><b>Прокурор</b></td><td><i>Пересечение нарушений в силовых структурах</i></td><td>Подача материалов на санкции</td></tr>
+          <tr><td><b>Старший прокурор</b></td><td><i>Проведение расследований, организация соответствующих мероприятий для сотрудников прокуратуры</i></td><td><i>Слежка за составом прокуратуры</i></td></tr>
+          <tr><td><b>Заместитель генерального прокурора</b></td><td><i>Один из глав аппарата, участвует в планировании и координации деятельности прокуратуры</i></td><td><i>Применение санкций по отношению сотрудников прокуратуры</i></td></tr>
+          <tr><td><b>Генеральный прокурор</b></td><td>Утверждение стажёров и санкций</td><td>Контроль всей работы прокуратуры</td></tr>
+        </tbody>
+      </table>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== TRAINEE APPLICATION ====================== -->
+<section id="apply" class="section">
+  <div class="container">
+    <div class="apply-box">
+      <h3>Заявление на стажировку в прокуратуре</h3>
+      <form id="prosecutor-application-form" class="interactive-form">
+        <div class="form-group">
+          <label for="p-char-name">Имя и Фамилия (Nick Name):</label>
+          <input type="text" id="p-char-name" name="charName" required placeholder="Ivan Ivanov">
+        </div>
+        <div class="form-group">
+          <label for="p-char-age">Время проживания в штате (лет):</label>
+          <input type="number" id="p-char-age" name="charAge" required placeholder="Требование: минимум 21" min="0" max="99">
+        </div>
+        <div class="form-group">
+          <label for="p-vk-tag">Связь (VK):</label>
+          <input type="text" id="p-vk-tag" name="vk" required placeholder="username">
+        </div>
+        <div class="form-group">
+          <label for="p-motivation">Почему вы хотите стать стажёром прокуратуры:</label>
+          <textarea id="p-motivation" name="motivation" rows="4" required placeholder="Расскажите о своей мотивации..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="p-experience">Опыт в юриспруденции / силовых структурах:</label>
+          <textarea id="p-experience" name="experience" rows="4" required placeholder="Опишите свой опыт, если он есть..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Отправить заявление</button>
+      </form>
+      <div id="application-message" class="form-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PROSECUTOR CABINET ====================== -->
+<section id="cabinet" class="section alt">
+  <div class="container">
+    <div class="apply-box">
+      <h3>Кабинет прокурора</h3>
+      <p style="color:#888; margin-bottom:16px;">
+        Доступно только действующим сотрудникам прокуратуры (Прокурор и выше).
+        Здесь подаются материалы на санкции против сотрудников силовых структур.
+      </p>
+
+      <!-- LOGIN FORM -->
+      <div id="prosecutor-login-box">
+        <div class="form-group">
+          <label for="pros-login">Логин:</label>
+          <input type="text" id="pros-login" placeholder="Ваш логин">
+        </div>
+        <div class="form-group">
+          <label for="pros-password">Пароль:</label>
+          <input type="password" id="pros-password" placeholder="Ваш пароль">
+        </div>
+        <button class="btn btn-primary" onclick="prosecutorLogin()">Войти</button>
+        <div id="prosecutor-login-error" style="color:#e74c3c; margin-top:10px; display:none;">
+          Неверный логин или пароль.
+        </div>
+      </div>
+
+      <!-- FIRST-LOGIN PASSWORD CHANGE (shown when a temporary ACTIVATE_ password is used) -->
+      <div id="prosecutor-change-pass-box" style="display:none;">
+        <p style="color:#f39c12; margin-bottom:12px;">
+          Это временный пароль. Установите постоянный пароль, чтобы продолжить.
+        </p>
+        <div class="form-group">
+          <label for="pros-new-password">Новый пароль (минимум 6 символов):</label>
+          <input type="password" id="pros-new-password" placeholder="Придумайте новый пароль">
+        </div>
+        <button class="btn btn-primary" onclick="prosecutorSetNewPassword()">Установить пароль</button>
+      </div>
+
+      <!-- SANCTION FORM (hidden until logged in) -->
+      <div id="prosecutor-sanction-box" style="display:none;">
+        <p style="color:#C9A24B; margin-bottom:16px;">
+          Вы вошли как <b id="pros-name-display"></b> (<span id="pros-rank-display"></span>)
+          — <a href="#" onclick="prosecutorLogout(); return false;" style="color:#e74c3c;">выйти</a>
+        </p>
+        <form id="prosecutor-sanction-form" class="interactive-form">
+          <div class="form-group">
+            <label for="s-target-name">Имя Фамилия нарушителя:</label>
+            <input type="text" id="s-target-name" required placeholder="Ivan Ivanov">
+          </div>
+          <div class="form-group">
+            <label for="s-target-faction">Силовая структура нарушителя:</label>
+            <input type="text" id="s-target-faction" required placeholder="SFPD / LSPD / Army SF ...">
+          </div>
+          <div class="form-group">
+            <label for="s-violation">В чём заключается нарушение:</label>
+            <textarea id="s-violation" rows="4" required placeholder="Пункты а также содержимое."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="s-sanction">Предлагаемая санкция:</label>
+            <textarea id="s-sanction" rows="3" required placeholder="предупреждение / понижение / увольнение..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="s-evidence">Ссылка на доказательства:</label>
+            <input type="text" id="s-evidence" placeholder="https://...">
+          </div>
+          <button type="submit" class="btn btn-primary">Подать материал на санкцию</button>
+        </form>
+        <div id="sanction-message" class="form-message"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== FOOTER ====================== -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-seal">GOV</div>
+    <p>© Government of Saint Louis · Evolve RP
+      <a href="prosecutor_admin.html" style="color: transparent; user-select: none; cursor: default; text-decoration: none;">·</a>
+    </p>
+  </div>
+</footer>
+
+<script src="prosecutors.js"></script>
+</body>
+</html>

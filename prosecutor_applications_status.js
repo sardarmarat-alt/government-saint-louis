@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadPage(page) {
   currentPage = page;
   const loadingText         = document.getElementById('loading');
-  const table               = document.getElementById('statements-table');
-  const tbody               = document.getElementById('statements-tbody');
+  const table               = document.getElementById('applications-table');
+  const tbody               = document.getElementById('applications-tbody');
   const paginationContainer = document.getElementById('pagination');
 
   if (loadingText) {
@@ -26,15 +26,16 @@ async function loadPage(page) {
   const to   = from + ITEMS_PER_PAGE - 1;
 
   try {
-    const { data: statements, error, count } = await sbClient
-      .from('lawyer_statements')
-      .select('created_at, char_name, char_age, status, admin_comment, checked_by, interview_status', { count: 'exact' })
+    // Только базовая публичная информация. Мотивация, опыт, VK и IP не выбираются.
+    const { data: applications, error, count } = await sbClient
+      .from('prosecutor_applications')
+      .select('created_at, char_name, char_age, status, admin_comment, checked_by', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
     if (error) throw error;
 
-    if (!statements || statements.length === 0) {
+    if (!applications || applications.length === 0) {
       if (loadingText) loadingText.innerText = "На данный момент заявлений нет.";
       if (table) table.style.display = 'none';
       if (paginationContainer) paginationContainer.innerHTML = '';
@@ -43,7 +44,7 @@ async function loadPage(page) {
 
     tbody.innerHTML = '';
 
-    statements.forEach(item => {
+    applications.forEach(item => {
       const tr = document.createElement('tr');
 
       const date = new Date(item.created_at);
@@ -52,17 +53,6 @@ async function loadPage(page) {
       let statusClass = 'status-waiting';
       if (item.status === 'Одобрено')  statusClass = 'status-approved';
       if (item.status === 'Отклонено') statusClass = 'status-rejected';
-
-      let interviewBadge = '<span style="color:#666;">—</span>';
-      if (item.status === 'Одобрено') {
-        if (item.interview_status === 'Приглашён') {
-          interviewBadge = '<span style="background:rgba(46,204,113,0.15); color:#2ecc71; border:1px solid #2ecc71; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold;">Приглашён</span>';
-        } else if (item.interview_status === 'Отказано') {
-          interviewBadge = '<span style="background:rgba(231,76,60,0.15); color:#e74c3c; border:1px solid #e74c3c; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold;">Отказано</span>';
-        } else {
-          interviewBadge = '<span style="background:rgba(243,156,18,0.12); color:#f39c12; border:1px solid #f39c12; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold;">Ожидается</span>';
-        }
-      }
 
       let responseText = '';
       if (item.checked_by && item.status !== 'На рассмотрении') {
@@ -81,7 +71,6 @@ async function loadPage(page) {
         <td style="font-weight: bold;">${item.char_name}</td>
         <td>${item.char_age}</td>
         <td><span class="status-badge ${statusClass}">${item.status}</span></td>
-        <td>${interviewBadge}</td>
         <td style="color: #ccc; font-style: italic;">${responseText}</td>
       `;
       tbody.appendChild(tr);

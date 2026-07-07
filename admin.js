@@ -225,6 +225,8 @@ async function loadAdminCards() {
             <div style="margin-left:20px; color:#888;">Комментарий: <i>${st.admin_comment || 'отсутствует'}</i></div>
           `}
         </div>
+
+        ${st.status === 'Одобрено' ? renderInterviewBlock(st) : ''}
       `;
       container.appendChild(card);
     });
@@ -251,6 +253,67 @@ async function processStatus(id, newStatus) {
     if (error) throw error;
     loadAdminCards();
   } catch (err) { alert('Ошибка доступа: ' + err.message); }
+}
+
+// ============================================================
+// СОБЕСЕДОВАНИЕ — статус после одобрения заявления
+// ============================================================
+// Показывается только для заявлений со статусом "Одобрено".
+// Цель: чтобы любой админ, открывший карточку, сразу видел,
+// проводилось ли уже собеседование и чем оно закончилось —
+// и не звал кандидата на повторное собеседование, если тот
+// уже был отклонён.
+function renderInterviewBlock(st) {
+  if (st.interview_status === 'Приглашён') {
+    return `
+      <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(46,204,113,0.12); border:1px solid #2ecc71;">
+        <div style="font-weight:bold; color:#2ecc71;">✅ СОБЕСЕДОВАНИЕ ПРОЙДЕНО — КАНДИДАТ ПРИГЛАШЁН</div>
+        <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${st.interview_by || '—'}</b></div>
+        ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${st.interview_comment}</i></div>` : ''}
+      </div>
+    `;
+  }
+
+  if (st.interview_status === 'Отказано') {
+    return `
+      <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(231,76,60,0.12); border:1px solid #e74c3c;">
+        <div style="font-weight:bold; color:#e74c3c;">❌ СОБЕСЕДОВАНИЕ ПРОЙДЕНО — КАНДИДАТУ ОТКАЗАНО</div>
+        <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${st.interview_by || '—'}</b></div>
+        ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${st.interview_comment}</i></div>` : ''}
+        <div style="margin-top:6px; color:#e74c3c; font-size:12px;">⚠️ Не приглашайте на повторное собеседование без согласования.</div>
+      </div>
+    `;
+  }
+
+  // Заявление одобрено, но собеседование ещё не проводилось
+  return `
+    <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(243,156,18,0.10); border:1px solid #f39c12;">
+      <div style="font-weight:bold; color:#f39c12;">🕓 СОБЕСЕДОВАНИЕ ЕЩЁ НЕ ПРОВОДИЛОСЬ</div>
+      <input type="text" class="comment-input" id="interview-comment-${st.id}" placeholder="Комментарий по итогам собеседования (необязательно)..." style="margin-top:8px;">
+      <div style="display:flex; gap:8px; margin-top:8px;">
+        <button class="btn-approve" onclick="processInterviewStatus(${st.id}, 'Приглашён')">✅ Пригласить</button>
+        <button class="btn-reject"  onclick="processInterviewStatus(${st.id}, 'Отказано')">❌ Отказать</button>
+      </div>
+    </div>
+  `;
+}
+
+async function processInterviewStatus(id, newStatus) {
+  const comment = document.getElementById(`interview-comment-${id}`)?.value.trim() || '';
+
+  try {
+    const { data: success, error } = await sbClient.rpc('update_interview_status_secure', {
+      p_statement_id:     id,
+      p_interview_status: newStatus,
+      p_comment:          comment,
+      p_admin_login:      CURRENT_ADMIN_USER,
+      p_admin_password:   CURRENT_ADMIN_HASH
+    });
+    if (error) throw error;
+    if (success) loadAdminCards();
+  } catch (err) {
+    alert('Ошибка доступа: ' + err.message);
+  }
 }
 
 // ============================================================
