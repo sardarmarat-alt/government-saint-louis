@@ -14,6 +14,29 @@
 
 <!-- ====================== HEADER ====================== -->
 <header class="site-header">
+  <style>
+    .site-menu-wrap { position:relative; display:flex; align-items:center; gap:10px; }
+    .site-menu-toggle {
+      display:flex; align-items:center; gap:8px; background:transparent; cursor:pointer;
+      border:1px solid rgba(201,162,75,0.4); border-radius:6px; padding:8px 14px;
+      color:#e8e8e8; font-family:inherit; font-size:14px;
+    }
+    .site-menu-toggle:hover { border-color:#C9A24B; }
+    .site-menu-toggle .bars { display:flex; flex-direction:column; gap:3px; }
+    .site-menu-toggle .bars span { width:16px; height:2px; background:#C9A24B; display:block; }
+    .site-menu-panel {
+      position:absolute; top:calc(100% + 10px); right:0; min-width:240px;
+      background:#11151d; border:1px solid rgba(201,162,75,0.3); border-radius:8px;
+      padding:8px; display:none; flex-direction:column; gap:2px; z-index:200;
+      box-shadow:0 12px 30px rgba(0,0,0,0.4);
+    }
+    .site-menu-panel.open { display:flex; }
+    .site-menu-panel a {
+      color:#ccc; text-decoration:none; padding:10px 12px; border-radius:6px; font-size:14px;
+    }
+    .site-menu-panel a:hover { background:rgba(201,162,75,0.12); color:#C9A24B; }
+    .site-menu-panel a.highlight { color:#C9A24B; font-weight:bold; }
+  </style>
   <div class="container header-inner">
     <div class="brand">
       <div class="seal">GOV</div>
@@ -22,20 +45,42 @@
         <span class="brand-sub">State of Saint Louis</span>
       </div>
     </div>
-    <nav class="nav" id="main-nav">
-      <a href="index.html">Главная</a>
-      <a href="#info" class="nav-link">О прокуратуре</a>
-      <a href="#structure" class="nav-link">Структура</a>
-      <a href="#apply" class="nav-link">Стажировка</a>
-      <a href="#cabinet" class="nav-link">Кабинет прокурора</a>
-      <a href="prosecutor_applications_status.html" class="nav-link">Статусы стажировки</a>
-      <a href="prosecutor_statements.html" class="nav-link">Статусы санкций</a>
-    </nav>
-    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="site-menu-wrap">
+      <a href="prosecutor_admin.html" style="border:1px solid #C9A24B; border-radius:6px; padding:8px 14px; color:#C9A24B; text-decoration:none; font-size:14px; white-space:nowrap;">Вход для админов</a>
+      <button class="site-menu-toggle" id="site-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="site-menu-panel">
+        <span class="bars"><span></span><span></span><span></span></span>
+        Меню
+      </button>
+      <nav class="site-menu-panel" id="site-menu-panel">
+        <a href="index.html">Главная</a>
+        <a href="#info">Общая информация</a>
+        <a href="#structure">Структура</a>
+        <a href="#apply">Стать стажёром</a>
+        <a href="#cabinet">Кабинет прокурора</a>
+        <a href="prosecutor_applications_status.html">Статусы стажировки</a>
+        <a href="prosecutor_statements.html">Статусы санкций</a>
+      </nav>
+    </div>
   </div>
 </header>
+<script>
+  (function () {
+    const toggle = document.getElementById('site-menu-toggle');
+    const panel  = document.getElementById('site-menu-panel');
+    if (!toggle || !panel) return;
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = panel.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+        panel.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
 
 <!-- ====================== HERO ====================== -->
 <section class="hero">
@@ -98,7 +143,7 @@
     <div class="hierarchy">
       <div class="hierarchy-row">
         <div class="hierarchy-card top">
-          <span class="rank">Генеральный прокурор</span>
+          <span class="rank">Главный прокурор</span>
           <span class="rank-en">Head Prosecutor</span>
         </div>
       </div>
@@ -139,13 +184,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td><b>Стажёр</b></td><td><i>Передать материаллы дел прокурорам и выше на рассмотрение</i></td><td>Прохождение программы подготовки</td></tr>
-          <tr><td><b>Прокурор</b></td><td><i>Пересечение нарушений в силовых структурах</i></td><td>Подача материалов на санкции</td></tr>
-          <tr><td><b>Старший прокурор</b></td><td><i>Проведение расследований, организация соответствующих мероприятий для сотрудников прокуратуры</i></td><td><i>Слежка за составом прокуратуры</i></td></tr>
-          <tr><td><b>Заместитель генерального прокурора</b></td><td><i>Один из глав аппарата, участвует в планировании и координации деятельности прокуратуры</i></td><td><i>Применение санкций по отношению сотрудников прокуратуры</i></td></tr>
-          <tr><td><b>Генеральный прокурор</b></td><td>Утверждение стажёров и санкций</td><td>Контроль всей работы прокуратуры</td></tr>
+          <tr><td><b>Стажёр</b></td><td><i>уточняется</i></td><td>Прохождение программы подготовки</td></tr>
+          <tr><td><b>Прокурор</b></td><td><i>уточняется</i></td><td>Подача материалов на санкции</td></tr>
+          <tr><td><b>Старший прокурор</b></td><td><i>уточняется</i></td><td><i>уточняется</i></td></tr>
+          <tr><td><b>Заместитель главного прокурора</b></td><td><i>уточняется</i></td><td><i>уточняется</i></td></tr>
+          <tr><td><b>Главный прокурор</b></td><td>Утверждение стажёров и санкций</td><td>Контроль всей работы прокуратуры</td></tr>
         </tbody>
       </table>
+      <p style="color:#666; font-size:13px; margin-top:10px;">
+        Таблица прав и обязанностей — черновая. Отредактируйте строки в prosecutors.html, когда определитесь с деталями.
       </p>
     </div>
   </div>
@@ -156,6 +203,9 @@
   <div class="container">
     <div class="apply-box">
       <h3>Заявление на стажировку в прокуратуре</h3>
+      <p style="color:#888; margin-bottom:16px;">
+        Вопросы формы — временные заготовки. Замените их своими, когда будет готова программа для стажёров.
+      </p>
       <form id="prosecutor-application-form" class="interactive-form">
         <div class="form-group">
           <label for="p-char-name">Имя и Фамилия (Nick Name):</label>
@@ -163,7 +213,7 @@
         </div>
         <div class="form-group">
           <label for="p-char-age">Время проживания в штате (лет):</label>
-          <input type="number" id="p-char-age" name="charAge" required placeholder="Требование: минимум 21" min="0" max="99">
+          <input type="number" id="p-char-age" name="charAge" required placeholder="25" min="0" max="99">
         </div>
         <div class="form-group">
           <label for="p-vk-tag">Связь (VK):</label>
@@ -230,7 +280,7 @@
         </p>
         <form id="prosecutor-sanction-form" class="interactive-form">
           <div class="form-group">
-            <label for="s-target-name">Имя Фамилия нарушителя:</label>
+            <label for="s-target-name">ФИО нарушителя:</label>
             <input type="text" id="s-target-name" required placeholder="Ivan Ivanov">
           </div>
           <div class="form-group">
@@ -239,11 +289,11 @@
           </div>
           <div class="form-group">
             <label for="s-violation">В чём заключается нарушение:</label>
-            <textarea id="s-violation" rows="4" required placeholder="Пункты а также содержимое."></textarea>
+            <textarea id="s-violation" rows="4" required placeholder="Опишите обстоятельства нарушения..."></textarea>
           </div>
           <div class="form-group">
             <label for="s-sanction">Предлагаемая санкция:</label>
-            <textarea id="s-sanction" rows="3" required placeholder="предупреждение / понижение / увольнение..."></textarea>
+            <textarea id="s-sanction" rows="3" required placeholder="Штраф / понижение / увольнение..."></textarea>
           </div>
           <div class="form-group">
             <label for="s-evidence">Ссылка на доказательства:</label>

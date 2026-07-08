@@ -14,6 +14,29 @@
 
 <!-- ====================== HEADER ====================== -->
 <header class="site-header">
+  <style>
+    .site-menu-wrap { position:relative; display:flex; align-items:center; gap:10px; }
+    .site-menu-toggle {
+      display:flex; align-items:center; gap:8px; background:transparent; cursor:pointer;
+      border:1px solid rgba(201,162,75,0.4); border-radius:6px; padding:8px 14px;
+      color:#e8e8e8; font-family:inherit; font-size:14px;
+    }
+    .site-menu-toggle:hover { border-color:#C9A24B; }
+    .site-menu-toggle .bars { display:flex; flex-direction:column; gap:3px; }
+    .site-menu-toggle .bars span { width:16px; height:2px; background:#C9A24B; display:block; }
+    .site-menu-panel {
+      position:absolute; top:calc(100% + 10px); right:0; min-width:240px;
+      background:#11151d; border:1px solid rgba(201,162,75,0.3); border-radius:8px;
+      padding:8px; display:none; flex-direction:column; gap:2px; z-index:200;
+      box-shadow:0 12px 30px rgba(0,0,0,0.4);
+    }
+    .site-menu-panel.open { display:flex; }
+    .site-menu-panel a {
+      color:#ccc; text-decoration:none; padding:10px 12px; border-radius:6px; font-size:14px;
+    }
+    .site-menu-panel a:hover { background:rgba(201,162,75,0.12); color:#C9A24B; }
+    .site-menu-panel a.highlight { color:#C9A24B; font-weight:bold; }
+  </style>
   <div class="container header-inner">
     <div class="brand">
       <div class="seal">GOV</div>
@@ -22,35 +45,55 @@
         <span class="brand-sub">State of Saint Louis</span>
       </div>
     </div>
-    <nav class="nav" id="main-nav">
-      <a href="#structure" class="nav-link">Структура</a>
-      <a href="#leadership" class="nav-link">Руководство</a>
-      <a href="#apply" class="nav-link">Заявление на Юриста</a>
-      <a href="#event" class="nav-link">Мероприятие</a>
-      <a href="#contacts" class="nav-link">Контакты</a>
-      <a href="prosecutors.html" class="nav-link">Прокуратура</a>
-      <a href="statements.html" class="nav-link" style="color: #C9A24B; font-weight: bold;">Статусы заявлений</a>
-    </nav>
-    <button class="burger" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="site-menu-wrap">
+      <a href="admin.html" style="border:1px solid #C9A24B; border-radius:6px; padding:8px 14px; color:#C9A24B; text-decoration:none; font-size:14px; white-space:nowrap;">Вход для админов</a>
+      <button class="site-menu-toggle" id="site-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="site-menu-panel">
+        <span class="bars"><span></span><span></span><span></span></span>
+        Меню
+      </button>
+      <nav class="site-menu-panel" id="site-menu-panel">
+        <a href="#structure">Структура</a>
+        <a href="#leadership">Руководство</a>
+        <a href="#apply">Заявление на Юриста</a>
+        <a href="#event">Мероприятие</a>
+        <a href="#contacts">Контакты</a>
+        <a href="prosecutors.html">Прокуратура</a>
+        <a href="statements.html" class="highlight">Статусы заявлений</a>
+      </nav>
+    </div>
   </div>
 </header>
+<script>
+  (function () {
+    const toggle = document.getElementById('site-menu-toggle');
+    const panel  = document.getElementById('site-menu-panel');
+    if (!toggle || !panel) return;
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = panel.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+        panel.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
 
 <!-- ====================== HERO ====================== -->
 <section class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
+  <video class="hero-bg" autoplay muted loop playsinline aria-hidden="true">
+    <source src="videos/hero.mp4" type="video/mp4">
+  </video>
+  
   <div class="container hero-inner">
-    <div class="hero-seal">GOV</div>
-    <h1 class="hero-title">Government<br>Saint&nbsp;Louis</h1>
-    <p class="hero-motto">«Свобода. Братство. Равенство.»</p>
-    <p class="hero-desc">
-      Официальный портал правительства. Здесь публикуются структура органов власти,
-      контакты министерств, форма обращения граждан и новости штата.
-    </p>
-    <div class="hero-actions">
-      <a href="#apply" class="btn btn-primary">Подать заявку на Юриста</a>
-      <a href="#structure" class="btn btn-ghost">Структура правительства</a>
+    <div class="hero-content-bottom">
+      <div class="hero-actions">
+        <a href="#apply" class="btn btn-primary">Подать заявку на Юриста</a>
+        <a href="#structure" class="btn btn-ghost">Структура правительства</a>
+      </div>
     </div>
   </div>
 </section>
