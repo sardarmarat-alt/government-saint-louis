@@ -264,10 +264,10 @@ async function processStatus(id, newStatus) {
 // и не звал кандидата на повторное собеседование, если тот
 // уже был отклонён.
 function renderInterviewBlock(st) {
-  if (st.interview_status === 'Приглашён') {
+  if (st.interview_status === 'Принят') {
     return `
       <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(46,204,113,0.12); border:1px solid #2ecc71;">
-        <div style="font-weight:bold; color:#2ecc71;">✅ СОБЕСЕДОВАНИЕ ПРОЙДЕНО — КАНДИДАТ ПРИГЛАШЁН</div>
+        <div style="font-weight:bold; color:#2ecc71;">✅ СОБЕСЕДОВАНИЕ ПРОЙДЕНО — КАНДИДАТ ПРИНЯТ</div>
         <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${st.interview_by || '—'}</b></div>
         ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${st.interview_comment}</i></div>` : ''}
       </div>
@@ -291,7 +291,7 @@ function renderInterviewBlock(st) {
       <div style="font-weight:bold; color:#f39c12;">🕓 СОБЕСЕДОВАНИЕ ЕЩЁ НЕ ПРОВОДИЛОСЬ</div>
       <input type="text" class="comment-input" id="interview-comment-${st.id}" placeholder="Комментарий по итогам собеседования (необязательно)..." style="margin-top:8px;">
       <div style="display:flex; gap:8px; margin-top:8px;">
-        <button class="btn-approve" onclick="processInterviewStatus(${st.id}, 'Приглашён')">✅ Пригласить</button>
+        <button class="btn-approve" onclick="processInterviewStatus(${st.id}, 'Принят')">✅ Принять</button>
         <button class="btn-reject"  onclick="processInterviewStatus(${st.id}, 'Отказано')">❌ Отказать</button>
       </div>
     </div>
