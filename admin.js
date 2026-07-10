@@ -26,6 +26,20 @@ async function sha256(message) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ============================================================
+// SECURITY: escape untrusted data before it goes into innerHTML.
+// Every field below comes from a public submission form (lawyer
+// applications, SC proposals) that anyone can fill in — without
+// this, a malicious applicant could plant a script in char_name,
+// biography, details, etc. and have it execute in the admin's
+// browser the next time this panel is opened.
+// ============================================================
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initSupabase();
   checkExistingSession();
@@ -238,34 +252,34 @@ function buildStatementCard(st) {
       card.innerHTML = `
         <div class="card-header">
           <div class="candidate-info">
-            <span style="font-size:18px; color:#C9A24B;"><b>${st.char_name}</b></span>
-            <span>Лет в штате: <b>${st.char_age}</b></span>
-            <span>VK: <a href="https://vk.com/${st.vk_link}" target="_blank" style="color:#5181b8;">${st.vk_link}</a></span>
-            <br><span style="font-size:11px; color:#666; margin-top:5px; display:block;">IP: <b>${st.user_ip || '—'}</b></span>
+            <span style="font-size:18px; color:#C9A24B;"><b>${escapeHtml(st.char_name)}</b></span>
+            <span>Лет в штате: <b>${escapeHtml(st.char_age)}</b></span>
+            <span>VK: <a href="https://vk.com/${escapeHtml(st.vk_link)}" target="_blank" style="color:#5181b8;">${escapeHtml(st.vk_link)}</a></span>
+            <br><span style="font-size:11px; color:#666; margin-top:5px; display:block;">IP: <b>${escapeHtml(st.user_ip || '—')}</b></span>
           </div>
           <div style="font-size:13px; color:#888;">Подано: ${date}</div>
         </div>
 
         <div class="question-block">
           <div class="question-title">Биография и опыт:</div>
-          <div class="answer-text">${st.biography}</div>
+          <div class="answer-text">${escapeHtml(st.biography)}</div>
         </div>
         <div class="question-block">
           <div class="question-title">Что такое ООП и где регламентируется:</div>
-          <div class="answer-text">${st.about_oop}</div>
+          <div class="answer-text">${escapeHtml(st.about_oop)}</div>
         </div>
         <div class="question-block">
           <div class="question-title">Статьи, за которые присваивается ООП:</div>
-          <div class="answer-text">${st.what_oop}</div>
+          <div class="answer-text">${escapeHtml(st.what_oop)}</div>
         </div>
         <div class="question-block">
           <div class="question-title">Порядок проверки заключённого:</div>
-          <div class="answer-text">${st.oop_order}</div>
+          <div class="answer-text">${escapeHtml(st.oop_order)}</div>
         </div>
 
         ${st.admin_comment ? `
           <div style="margin-top:10px; font-style:italic; color:#aaa; background:#111; padding:10px; border-radius:4px;">
-            <strong>Комментарий (${st.checked_by || 'Администрация'}):</strong> ${st.admin_comment}
+            <strong>Комментарий (${escapeHtml(st.checked_by || 'Администрация')}):</strong> ${escapeHtml(st.admin_comment)}
           </div>` : ''}
 
         <div class="admin-actions" id="actions-${st.id}">
@@ -274,9 +288,9 @@ function buildStatementCard(st) {
             <button class="btn-approve" onclick="confirmApplicationDecision(${st.id}, 'Одобрено', '${escapeAttr(st.char_name)}')">✅ Одобрить</button>
             <button class="btn-reject"  onclick="confirmApplicationDecision(${st.id}, 'Отклонено', '${escapeAttr(st.char_name)}')">❌ Отклонить</button>
           ` : `
-            <div style="color:#aaa;">Решение: <span style="color:${statusColor}; font-weight:bold;">${st.status}</span></div>
-            <div style="margin-left:20px; color:#888;">Ответственный: <b style="color:#fff;">${st.checked_by || '—'}</b></div>
-            <div style="margin-left:20px; color:#888;">Комментарий: <i>${st.admin_comment || 'отсутствует'}</i></div>
+            <div style="color:#aaa;">Решение: <span style="color:${statusColor}; font-weight:bold;">${escapeHtml(st.status)}</span></div>
+            <div style="margin-left:20px; color:#888;">Ответственный: <b style="color:#fff;">${escapeHtml(st.checked_by || '—')}</b></div>
+            <div style="margin-left:20px; color:#888;">Комментарий: <i>${escapeHtml(st.admin_comment || 'отсутствует')}</i></div>
           `}
         </div>
 
@@ -313,10 +327,22 @@ function confirmNo() {
   if (_confirmResolve) { _confirmResolve(false); _confirmResolve = null; }
 }
 
-// Escapes single quotes/backslashes so values can be safely embedded
-// inside an inline onclick="...('...')" attribute.
+// Safely embeds a value inside onclick="...('VALUE')" — i.e. a single-quoted
+// JS string literal that itself sits inside a double-quoted HTML attribute.
+// Two passes, in order:
+//   1. JS-escape backslashes/single-quotes so the value can't break out of
+//      the '...' JS string once the browser HTML-decodes the attribute.
+//   2. HTML-escape the result so it can't break out of the ="..." attribute
+//      itself (e.g. a stray " in char_name closing the attribute early).
 function escapeAttr(str) {
-  return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const jsEscaped = String(str ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'");
+  return jsEscaped
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 async function confirmApplicationDecision(id, newStatus, candidateName) {
@@ -373,8 +399,8 @@ function renderInterviewBlock(st) {
     return `
       <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(46,204,113,0.12); border:1px solid #2ecc71;">
         <div style="font-weight:bold; color:#2ecc71;">✅ СОБЕСЕДОВАНИЕ ПРОЙДЕНО — КАНДИДАТ ПРИНЯТ</div>
-        <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${st.interview_by || '—'}</b></div>
-        ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${st.interview_comment}</i></div>` : ''}
+        <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${escapeHtml(st.interview_by || '—')}</b></div>
+        ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${escapeHtml(st.interview_comment)}</i></div>` : ''}
       </div>
     `;
   }
@@ -383,8 +409,8 @@ function renderInterviewBlock(st) {
     return `
       <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(231,76,60,0.12); border:1px solid #e74c3c;">
         <div style="font-weight:bold; color:#e74c3c;">❌ СОБЕСЕДОВАНИЕ ПРОЙДЕНО — КАНДИДАТУ ОТКАЗАНО</div>
-        <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${st.interview_by || '—'}</b></div>
-        ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${st.interview_comment}</i></div>` : ''}
+        <div style="margin-top:4px; color:#aaa;">Провёл: <b style="color:#fff;">${escapeHtml(st.interview_by || '—')}</b></div>
+        ${st.interview_comment ? `<div style="color:#aaa;">Комментарий: <i>${escapeHtml(st.interview_comment)}</i></div>` : ''}
         <div style="margin-top:6px; color:#e74c3c; font-size:12px;">⚠️ Не приглашайте на повторное собеседование без согласования.</div>
       </div>
     `;
@@ -473,20 +499,20 @@ async function loadLeaderProposals() {
       }
 
       tr.innerHTML = `
-        <td style="padding:12px;"><strong>${prop.sender_login}</strong><br><small style="color:#94a3b8;">${fromFaction}</small></td>
-        <td style="padding:12px;"><span style="background:#222; border:1px solid #333; padding:4px 8px; border-radius:4px; font-size:12px; color:#eab308;">${prop.type}</span></td>
+        <td style="padding:12px;"><strong>${escapeHtml(prop.sender_login)}</strong><br><small style="color:#94a3b8;">${escapeHtml(fromFaction)}</small></td>
+        <td style="padding:12px;"><span style="background:#222; border:1px solid #333; padding:4px 8px; border-radius:4px; font-size:12px; color:#eab308;">${escapeHtml(prop.type)}</span></td>
         <td style="padding:12px;">${withFaction}</td>
-        <td style="padding:12px; max-width:250px; white-space:pre-wrap;">${prop.details}</td>
+        <td style="padding:12px; max-width:250px; white-space:pre-wrap;">${escapeHtml(prop.details)}</td>
         <td style="padding:12px; color:#2ecc71; font-weight:bold;">${Number(prop.fund).toLocaleString()} SC</td>
         <td style="padding:12px;">
           ${prop.evidence_link && prop.evidence_link !== '—'
-            ? `<a href="${prop.evidence_link}" target="_blank" style="color:#3498db;">Открыть доказательства 🔗</a>`
-            : `<span style="color:#555;">${prop.evidence_link || 'Нет ссылки'}</span>`}
+            ? `<a href="${escapeHtml(prop.evidence_link)}" target="_blank" style="color:#3498db;">Открыть доказательства 🔗</a>`
+            : `<span style="color:#555;">${escapeHtml(prop.evidence_link || 'Нет ссылки')}</span>`}
         </td>
         <td style="padding:12px;">
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button onclick="handleSCDecision(${prop.id}, 'Одобрено', '${prop.type}', ${prop.faction_id}, ${opponentId || 'null'}, ${prop.fund})"  style="background:#2ecc71; color:#fff; border:none; padding:6px 12px; font-weight:bold; cursor:pointer; border-radius:4px;">Одобрить</button>
-            <button onclick="handleSCDecision(${prop.id}, 'Отклонено', '${prop.type}', ${prop.faction_id}, ${opponentId || 'null'}, ${prop.fund})" style="background:#e74c3c; color:#fff; border:none; padding:6px 12px; font-weight:bold; cursor:pointer; border-radius:4px;">Отклонить</button>
+            <button onclick="handleSCDecision(${prop.id}, 'Одобрено', '${escapeAttr(prop.type)}', ${prop.faction_id}, ${opponentId || 'null'}, ${prop.fund})"  style="background:#2ecc71; color:#fff; border:none; padding:6px 12px; font-weight:bold; cursor:pointer; border-radius:4px;">Одобрить</button>
+            <button onclick="handleSCDecision(${prop.id}, 'Отклонено', '${escapeAttr(prop.type)}', ${prop.faction_id}, ${opponentId || 'null'}, ${prop.fund})" style="background:#e74c3c; color:#fff; border:none; padding:6px 12px; font-weight:bold; cursor:pointer; border-radius:4px;">Отклонить</button>
           </div>
         </td>
       `;
