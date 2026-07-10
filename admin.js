@@ -106,7 +106,7 @@ async function handleLogin() {
     }
   } catch (err) {
     console.error('Ошибка авторизации:', err);
-    alert('Ошибка запроса к базе данных.');
+    alert(err.message || 'Ошибка запроса к базе данных.');
     setBtn(loginBtn, "Войти в систему", false);
   }
 }
@@ -155,7 +155,7 @@ async function handlePasswordChange() {
     }
   } catch (err) {
     console.error('Ошибка смены пароля:', err);
-    alert('Ошибка сервера при смене пароля.');
+    alert(err.message || 'Ошибка сервера при смене пароля.');
   }
 }
 

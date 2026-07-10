@@ -28,6 +28,19 @@ async function sha256(message) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ============================================================
+// SECURITY: escape untrusted data before it goes into innerHTML.
+// Applications and sanctions are submitted through public forms —
+// without this, a malicious submission could plant a script in
+// char_name, motivation, violation_details, etc. and have it
+// execute in this admin's browser.
+// ============================================================
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initSupabase();
   if (CURRENT_ADMIN_USER && CURRENT_ADMIN_HASH) {
@@ -78,7 +91,7 @@ async function handleLogin() {
     }
   } catch (err) {
     console.error('Ошибка авторизации:', err);
-    alert('Ошибка запроса к базе данных.');
+    alert(err.message || 'Ошибка запроса к базе данных.');
   }
 }
 
@@ -122,7 +135,7 @@ async function handlePasswordChange() {
     }
   } catch (err) {
     console.error('Ошибка смены пароля:', err);
-    alert('Ошибка сервера при смене пароля.');
+    alert(err.message || 'Ошибка сервера при смене пароля.');
   }
 }
 
@@ -132,7 +145,7 @@ function afterLogin() {
   if (notice) {
     notice.innerHTML = canDecide ? '' : `
       <div class="no-access">
-        Вы вошли как <b>${CURRENT_ADMIN_USER}</b>. Вы можете просматривать заявления и материалы,
+        Вы вошли как <b>${escapeHtml(CURRENT_ADMIN_USER)}</b>. Вы можете просматривать заявления и материалы,
         но принимать решения (одобрять/отклонять) может только Главный прокурор или суперадминистратор.
       </div>`;
   }
@@ -192,22 +205,22 @@ function renderApplicationCard(app) {
   card.innerHTML = `
     <div class="card-header">
       <div>
-        <span style="font-size:17px; color:#C9A24B;"><b>${app.char_name}</b></span>
-        <span style="color:#888; margin-left:10px;">Лет в штате: ${app.char_age}</span>
-        <span style="color:#888; margin-left:10px;">VK: <a href="https://vk.com/${app.vk_link}" target="_blank" style="color:#5181b8;">${app.vk_link}</a></span>
+        <span style="font-size:17px; color:#C9A24B;"><b>${escapeHtml(app.char_name)}</b></span>
+        <span style="color:#888; margin-left:10px;">Лет в штате: ${escapeHtml(app.char_age)}</span>
+        <span style="color:#888; margin-left:10px;">VK: <a href="https://vk.com/${escapeHtml(app.vk_link)}" target="_blank" style="color:#5181b8;">${escapeHtml(app.vk_link)}</a></span>
       </div>
-      <span class="badge ${badgeClass}">${app.status}</span>
+      <span class="badge ${badgeClass}">${escapeHtml(app.status)}</span>
     </div>
-    <div class="field"><div class="field-label">Мотивация</div><div class="field-value">${app.motivation}</div></div>
-    <div class="field"><div class="field-label">Опыт</div><div class="field-value">${app.experience}</div></div>
+    <div class="field"><div class="field-label">Мотивация</div><div class="field-value">${escapeHtml(app.motivation)}</div></div>
+    <div class="field"><div class="field-label">Опыт</div><div class="field-value">${escapeHtml(app.experience)}</div></div>
     <div class="field"><div class="field-label">Подано</div><div class="field-value">${date}</div></div>
 
     ${app.status !== 'На рассмотрении' ? `
       <div class="field" style="margin-top:10px;">
         <div class="field-label">Решение принял</div>
-        <div class="field-value">${app.checked_by || '—'}</div>
+        <div class="field-value">${escapeHtml(app.checked_by || '—')}</div>
       </div>
-      ${app.admin_comment ? `<div class="field"><div class="field-label">Комментарий</div><div class="field-value">${app.admin_comment}</div></div>` : ''}
+      ${app.admin_comment ? `<div class="field"><div class="field-label">Комментарий</div><div class="field-value">${escapeHtml(app.admin_comment)}</div></div>` : ''}
     ` : (canDecide ? `
       <input type="text" class="comment-input" id="app-comment-${app.id}" placeholder="Комментарий (необязательно)...">
       <div class="actions">
@@ -278,17 +291,17 @@ function renderSanctionCard(s) {
   card.innerHTML = `
     <div class="card-header">
       <div>
-        <span style="font-size:17px; color:#C9A24B;"><b>${s.target_name}</b></span>
-        <span style="color:#888; margin-left:10px;">Структура: ${s.target_faction}</span>
+        <span style="font-size:17px; color:#C9A24B;"><b>${escapeHtml(s.target_name)}</b></span>
+        <span style="color:#888; margin-left:10px;">Структура: ${escapeHtml(s.target_faction)}</span>
       </div>
-      <span class="badge ${badgeClass}">${s.status}</span>
+      <span class="badge ${badgeClass}">${escapeHtml(s.status)}</span>
     </div>
-    <div class="field"><div class="field-label">Подал</div><div class="field-value">${s.sender_login} (${s.sender_rank})</div></div>
-    <div class="field"><div class="field-label">Нарушение</div><div class="field-value">${s.violation_details}</div></div>
-    <div class="field"><div class="field-label">Предлагаемая санкция</div><div class="field-value">${s.proposed_sanction}</div></div>
+    <div class="field"><div class="field-label">Подал</div><div class="field-value">${escapeHtml(s.sender_login)} (${escapeHtml(s.sender_rank)})</div></div>
+    <div class="field"><div class="field-label">Нарушение</div><div class="field-value">${escapeHtml(s.violation_details)}</div></div>
+    <div class="field"><div class="field-label">Предлагаемая санкция</div><div class="field-value">${escapeHtml(s.proposed_sanction)}</div></div>
     <div class="field"><div class="field-label">Доказательства</div><div class="field-value">${
       s.evidence_link && s.evidence_link !== '—'
-        ? `<a href="${s.evidence_link}" target="_blank" style="color:#3498db;">Открыть 🔗</a>`
+        ? `<a href="${escapeHtml(s.evidence_link)}" target="_blank" style="color:#3498db;">Открыть 🔗</a>`
         : '—'
     }</div></div>
     <div class="field"><div class="field-label">Подано</div><div class="field-value">${date}</div></div>
@@ -296,9 +309,9 @@ function renderSanctionCard(s) {
     ${s.status !== 'На рассмотрении' ? `
       <div class="field" style="margin-top:10px;">
         <div class="field-label">Решение принял</div>
-        <div class="field-value">${s.checked_by || '—'}</div>
+        <div class="field-value">${escapeHtml(s.checked_by || '—')}</div>
       </div>
-      ${s.admin_comment ? `<div class="field"><div class="field-label">Комментарий</div><div class="field-value">${s.admin_comment}</div></div>` : ''}
+      ${s.admin_comment ? `<div class="field"><div class="field-label">Комментарий</div><div class="field-value">${escapeHtml(s.admin_comment)}</div></div>` : ''}
     ` : (canDecide ? `
       <input type="text" class="comment-input" id="sanction-comment-${s.id}" placeholder="Комментарий (необязательно)...">
       <div class="actions">

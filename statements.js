@@ -3,6 +3,19 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ============================================================
+// SECURITY: escape untrusted data before it goes into innerHTML.
+// This is a PUBLIC page — char_name/admin_comment/checked_by all
+// trace back to public submission forms or admin free-text input.
+// Without escaping, a malicious submission could run a script in
+// every visitor's browser who opens this page.
+// ============================================================
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
 const ITEMS_PER_PAGE = 10;
 let currentPage = 1;
 
@@ -55,8 +68,8 @@ async function loadPage(page) {
 
       let interviewBadge = '<span style="color:#666;">—</span>';
       if (item.status === 'Одобрено') {
-        if (item.interview_status === 'Приглашён') {
-          interviewBadge = '<span style="background:rgba(46,204,113,0.15); color:#2ecc71; border:1px solid #2ecc71; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold;">Приглашён</span>';
+        if (item.interview_status === 'Принят') {
+          interviewBadge = '<span style="background:rgba(46,204,113,0.15); color:#2ecc71; border:1px solid #2ecc71; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold;">Принят</span>';
         } else if (item.interview_status === 'Отказано') {
           interviewBadge = '<span style="background:rgba(231,76,60,0.15); color:#e74c3c; border:1px solid #e74c3c; padding:3px 10px; border-radius:4px; font-size:12px; font-weight:bold;">Отказано</span>';
         } else {
@@ -66,10 +79,10 @@ async function loadPage(page) {
 
       let responseText = '';
       if (item.checked_by && item.status !== 'На рассмотрении') {
-        responseText += `(${item.checked_by}) `;
+        responseText += `(${escapeHtml(item.checked_by)}) `;
       }
       if (item.admin_comment) {
-        responseText += item.admin_comment;
+        responseText += escapeHtml(item.admin_comment);
       } else if (item.status !== 'На рассмотрении') {
         responseText += '—';
       } else {
@@ -78,9 +91,9 @@ async function loadPage(page) {
 
       tr.innerHTML = `
         <td>${formattedDate}</td>
-        <td style="font-weight: bold;">${item.char_name}</td>
-        <td>${item.char_age}</td>
-        <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+        <td style="font-weight: bold;">${escapeHtml(item.char_name)}</td>
+        <td>${escapeHtml(item.char_age)}</td>
+        <td><span class="status-badge ${statusClass}">${escapeHtml(item.status)}</span></td>
         <td>${interviewBadge}</td>
         <td style="color: #ccc; font-style: italic;">${responseText}</td>
       `;

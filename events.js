@@ -18,6 +18,23 @@ async function sha256(message) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// ============================================================
+// SECURITY: escape untrusted data before it goes into innerHTML.
+// Most of this page's data (faction names, daily question text) is
+// admin-controlled, but balance_history.description is NOT — it's
+// built server-side from the free-text `details` a leader typed
+// into a task/battle report (submitFightReport/submitTaskReport
+// below). Once an admin approves that proposal, the same text gets
+// copied verbatim into balance_history and rendered here, on this
+// PUBLIC page, for every visitor. Escaping everything uniformly
+// means it doesn't matter which fields are "supposed" to be safe.
+// ============================================================
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
 let CURRENT_LEADER_USER       = sessionStorage.getItem('leader_user')       || null;
 let CURRENT_LEADER_HASH       = sessionStorage.getItem('leader_hash')       || null;
 let CURRENT_LEADER_FACTION_ID = sessionStorage.getItem('leader_faction_id') || null;
@@ -54,7 +71,7 @@ async function loadFactionsRating() {
       const card  = document.createElement('div');
       card.className = `faction-card ${isTop ? 'top-1' : ''}`;
       card.innerHTML = `
-        <div class="faction-name">${isTop ? '👑 ' : ''}${faction.name}</div>
+        <div class="faction-name">${isTop ? '👑 ' : ''}${escapeHtml(faction.name)}</div>
         <div class="sc-amount">${Number(faction.sc_balance).toLocaleString()} SC</div>
       `;
       grid.appendChild(card);
@@ -86,8 +103,8 @@ async function loadDailyQuestion() {
     const qText = document.getElementById('questionText');
     if (questions && questions.length > 0) {
       const q = questions[0];
-      qText.innerHTML = `<strong>Вопрос:</strong> ${q.question_text}<br>
-        <small style="color:#00ffcc;">Награда: ${q.reward} SC</small>`;
+      qText.innerHTML = `<strong>Вопрос:</strong> ${escapeHtml(q.question_text)}<br>
+        <small style="color:#00ffcc;">Награда: ${Number(q.reward).toLocaleString()} SC</small>`;
       qText.dataset.qId    = q.id;
       qText.dataset.reward = q.reward;
     } else {
@@ -162,10 +179,10 @@ function renderHistoryPage() {
 
     tr.innerHTML = `
       <td>${date}</td>
-      <td><b>${row.fraction_name}</b></td>
-      <td><span style="color:#38bdf8;">${row.action_type}</span></td>
+      <td><b>${escapeHtml(row.fraction_name)}</b></td>
+      <td><span style="color:#38bdf8;">${escapeHtml(row.action_type)}</span></td>
       <td style="color:${amountColor}; font-weight:bold;">${amountText} SC</td>
-      <td style="color:#94a3b8;">${row.description || ''}</td>
+      <td style="color:#94a3b8;">${escapeHtml(row.description || '')}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -307,7 +324,7 @@ async function handleLeaderLogin() {
     const { data: isValid, error } = await sbClient.rpc('check_leader_credentials', {
       p_login: login, p_password_hash: inputHash
     });
-    if (error) { alert("Ошибка базы данных при проверке учётных данных."); return; }
+    if (error) { alert(error.message || "Ошибка базы данных при проверке учётных данных."); return; }
     if (!isValid) { alert("Неверный логин или пароль."); return; }
 
     const { data: userData, error: uErr } = await sbClient
@@ -330,7 +347,7 @@ async function handleLeaderLogin() {
     toggleAuthModal(false);
     checkLeaderSession();
   } catch (err) {
-    alert("Сбой авторизации. Попробуйте ещё раз.");
+    alert(err.message || "Сбой авторизации. Попробуйте ещё раз.");
   }
 }
 
@@ -360,7 +377,7 @@ async function saveNewLeaderPassword() {
       alert("Не удалось сменить пароль.");
     }
   } catch (err) {
-    alert("Ошибка сохранения пароля.");
+    alert(err.message || "Ошибка сохранения пароля.");
   }
 }
 
