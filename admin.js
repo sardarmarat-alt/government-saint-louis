@@ -148,6 +148,10 @@ async function handlePasswordChange() {
 // ============================================================
 // LAWYER APPLICATIONS
 // ============================================================
+let ALL_STATEMENTS      = [];
+let STATEMENTS_PAGE     = 1;
+const STATEMENTS_PAGE_SIZE = 5;
+
 async function loadAdminCards() {
   if (!sbClient) initSupabase();
 
@@ -164,19 +168,69 @@ async function loadAdminCards() {
 
     if (loadingText) loadingText.style.display = 'none';
 
-    if (!statements || statements.length === 0) {
-      if (container) container.innerHTML = '<p style="color:#888; text-align:center;">Заявлений пока нет.</p>';
-      return;
-    }
+    ALL_STATEMENTS = statements || [];
+    STATEMENTS_PAGE = 1;
+    renderStatementsPage();
+  } catch (err) {
+    console.error('Ошибка загрузки заявлений:', err);
+    if (loadingText) { loadingText.style.color = '#e74c3c'; loadingText.innerText = 'Ошибка загрузки данных.'; }
+  }
+}
 
-    statements.forEach(st => {
-      const card = document.createElement('div');
-      let borderClass = 'border-waiting';
-      let statusColor = '#f39c12';
-      if (st.status === 'Одобрено')  { borderClass = 'border-approved'; statusColor = '#2ecc71'; }
-      if (st.status === 'Отклонено') { borderClass = 'border-rejected'; statusColor = '#e74c3c'; }
+// Renders only the current page's slice of ALL_STATEMENTS into #cards-container,
+// and draws the page-number controls into #lawyersPagination.
+function renderStatementsPage() {
+  const container    = document.getElementById('cards-container');
+  const paginationEl = document.getElementById('lawyersPagination');
+  if (!container) return;
+  container.innerHTML = '';
 
-      card.className = `statement-card ${borderClass}`;
+  if (ALL_STATEMENTS.length === 0) {
+    container.innerHTML = '<p style="color:#888; text-align:center;">Заявлений пока нет.</p>';
+    if (paginationEl) paginationEl.innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(ALL_STATEMENTS.length / STATEMENTS_PAGE_SIZE));
+  if (STATEMENTS_PAGE > totalPages) STATEMENTS_PAGE = totalPages;
+
+  const start = (STATEMENTS_PAGE - 1) * STATEMENTS_PAGE_SIZE;
+  const pageItems = ALL_STATEMENTS.slice(start, start + STATEMENTS_PAGE_SIZE);
+
+  pageItems.forEach(st => container.appendChild(buildStatementCard(st)));
+
+  renderPaginationControls(totalPages);
+}
+
+function renderPaginationControls(totalPages) {
+  const el = document.getElementById('lawyersPagination');
+  if (!el) return;
+  if (totalPages <= 1) { el.innerHTML = ''; return; }
+
+  let html = `<button class="page-btn" ${STATEMENTS_PAGE === 1 ? 'disabled' : ''} onclick="goToStatementsPage(${STATEMENTS_PAGE - 1})">← Пред.</button>`;
+  for (let p = 1; p <= totalPages; p++) {
+    html += `<button class="page-btn ${p === STATEMENTS_PAGE ? 'active' : ''}" onclick="goToStatementsPage(${p})">${p}</button>`;
+  }
+  html += `<button class="page-btn" ${STATEMENTS_PAGE === totalPages ? 'disabled' : ''} onclick="goToStatementsPage(${STATEMENTS_PAGE + 1})">След. →</button>`;
+  el.innerHTML = html;
+}
+
+function goToStatementsPage(p) {
+  STATEMENTS_PAGE = p;
+  renderStatementsPage();
+  document.getElementById('cards-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Builds a single lawyer-application card as a DOM element (extracted so the
+// paginator can render just one page's worth without duplicating this logic).
+function buildStatementCard(st) {
+  const card = document.createElement('div');
+  let borderClass = 'border-waiting';
+  let statusColor = '#f39c12';
+  if (st.status === 'Одобрено')  { borderClass = 'border-approved'; statusColor = '#2ecc71'; }
+  if (st.status === 'Отклонено') { borderClass = 'border-rejected'; statusColor = '#e74c3c'; }
+
+  card.className = `statement-card ${borderClass}`;
 
       const date = new Date(st.created_at).toLocaleDateString('ru-RU') + ' ' +
                    new Date(st.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
@@ -217,8 +271,8 @@ async function loadAdminCards() {
         <div class="admin-actions" id="actions-${st.id}">
           ${st.status === 'На рассмотрении' ? `
             <input type="text" class="comment-input" id="comment-${st.id}" placeholder="Комментарий к решению (необязательно)...">
-            <button class="btn-approve" onclick="processStatus(${st.id}, 'Одобрено')">✅ Одобрить</button>
-            <button class="btn-reject"  onclick="processStatus(${st.id}, 'Отклонено')">❌ Отклонить</button>
+            <button class="btn-approve" onclick="confirmApplicationDecision(${st.id}, 'Одобрено', '${escapeAttr(st.char_name)}')">✅ Одобрить</button>
+            <button class="btn-reject"  onclick="confirmApplicationDecision(${st.id}, 'Отклонено', '${escapeAttr(st.char_name)}')">❌ Отклонить</button>
           ` : `
             <div style="color:#aaa;">Решение: <span style="color:${statusColor}; font-weight:bold;">${st.status}</span></div>
             <div style="margin-left:20px; color:#888;">Ответственный: <b style="color:#fff;">${st.checked_by || '—'}</b></div>
@@ -228,12 +282,63 @@ async function loadAdminCards() {
 
         ${st.status === 'Одобрено' ? renderInterviewBlock(st) : ''}
       `;
-      container.appendChild(card);
-    });
-  } catch (err) {
-    console.error('Ошибка загрузки заявлений:', err);
-    if (loadingText) { loadingText.style.color = '#e74c3c'; loadingText.innerText = 'Ошибка загрузки данных.'; }
-  }
+  return card;
+}
+
+// ============================================================
+// CONFIRMATION MODAL — used before any decision that can't be
+// undone from the panel itself (approve/reject application,
+// interview outcome). Prevents accidental clicks like the one
+// that required a manual DB fix.
+// ============================================================
+let _confirmResolve = null;
+
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    const msgEl = document.getElementById('confirmMessage');
+    if (msgEl) msgEl.innerText = message;
+    const overlay = document.getElementById('confirmOverlay');
+    if (overlay) overlay.style.display = 'flex';
+    _confirmResolve = resolve;
+  });
+}
+
+function confirmYes() {
+  hide('confirmOverlay');
+  if (_confirmResolve) { _confirmResolve(true); _confirmResolve = null; }
+}
+
+function confirmNo() {
+  hide('confirmOverlay');
+  if (_confirmResolve) { _confirmResolve(false); _confirmResolve = null; }
+}
+
+// Escapes single quotes/backslashes so values can be safely embedded
+// inside an inline onclick="...('...')" attribute.
+function escapeAttr(str) {
+  return String(str ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+async function confirmApplicationDecision(id, newStatus, candidateName) {
+  const verb = newStatus === 'Одобрено' ? 'ОДОБРИТЬ' : 'ОТКЛОНИТЬ';
+  const ok = await showConfirm(
+    `Вы уверены, что хотите ${verb} анкету кандидата «${candidateName}»?\n\n` +
+    `После этого кнопки решения исчезнут — изменить статус через панель будет нельзя, ` +
+    `только вручную через базу данных.`
+  );
+  if (!ok) return;
+  processStatus(id, newStatus);
+}
+
+async function confirmInterviewDecision(id, newStatus, candidateName) {
+  const verb = newStatus === 'Принят' ? 'ПРИНЯТЬ' : 'ОТКАЗАТЬ';
+  const ok = await showConfirm(
+    `Вы уверены, что хотите ${verb} кандидата «${candidateName}» по итогам собеседования?\n\n` +
+    `Это решение будет зафиксировано окончательно — отменить его через панель нельзя, ` +
+    `только вручную через базу данных.`
+  );
+  if (!ok) return;
+  processInterviewStatus(id, newStatus);
 }
 
 async function processStatus(id, newStatus) {
@@ -291,8 +396,8 @@ function renderInterviewBlock(st) {
       <div style="font-weight:bold; color:#f39c12;">🕓 СОБЕСЕДОВАНИЕ ЕЩЁ НЕ ПРОВОДИЛОСЬ</div>
       <input type="text" class="comment-input" id="interview-comment-${st.id}" placeholder="Комментарий по итогам собеседования (необязательно)..." style="margin-top:8px;">
       <div style="display:flex; gap:8px; margin-top:8px;">
-        <button class="btn-approve" onclick="processInterviewStatus(${st.id}, 'Принят')">✅ Принять</button>
-        <button class="btn-reject"  onclick="processInterviewStatus(${st.id}, 'Отказано')">❌ Отказать</button>
+        <button class="btn-approve" onclick="confirmInterviewDecision(${st.id}, 'Принят', '${escapeAttr(st.char_name)}')">✅ Принять</button>
+        <button class="btn-reject"  onclick="confirmInterviewDecision(${st.id}, 'Отказано', '${escapeAttr(st.char_name)}')">❌ Отказать</button>
       </div>
     </div>
   `;
