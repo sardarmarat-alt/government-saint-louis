@@ -624,7 +624,7 @@ a:focus-visible, button:focus-visible {
   }
 </style>
 
-@media (max-width: 933px) {
+@media (max-width: 805px) {
   /* 1. Fix the Table: Make it scrollable and stop it from breaking the page */
   .statements-container {
     overflow-x: auto;
