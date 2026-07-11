@@ -623,3 +623,29 @@ a:focus-visible, button:focus-visible {
     .brand-sub { font-size: 10px; }
   }
 </style>
+
+@media (max-width: 768px) {
+  /* 1. Fix the Table: Make it scrollable and stop it from breaking the page */
+  .statements-container {
+    overflow-x: auto;
+    width: 100%;
+    padding: 0 10px;
+  }
+  
+  .statements-table {
+    display: block !important;
+    width: 100%;
+  }
+
+  /* 2. Fix the Header: Allow items to stack so they don't overflow */
+  .site-header .site-menu-wrap {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  /* 3. Fix the Hero Content: Reduce padding so it fits */
+  .hero-content-bottom {
+    padding: 15px;
+    width: 90%;
+  }
+}
