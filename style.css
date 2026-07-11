@@ -483,21 +483,35 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 600px) {
   .hero { padding: 80px 0 64px; }
   .section { padding: 64px 0; }
+
+  /* The statements/applications tables have 5-6 columns and previously had
+     zero mobile handling — this was likely the reviewer's real complaint
+     if they were looking at statements.html rather than the homepage.
+     Making the table itself scrollable horizontally (instead of letting
+     it overflow the whole page) keeps every column readable without
+     needing any HTML changes. */
+  .statements-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  .statements-container {
+    padding: 14px;
+  }
+
+  .apply-box {
+    padding: 20px;
+  }
 }
 
 /* ============ HERO - FINAL CLEANUP ============ */
-.hero {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 40px;
-  overflow: hidden;
-  background: transparent !important;
-  border: none !important;
-}
+/* (Consolidated — the old version of this block had .hero, .hero-bg and
+   .hero-actions duplicated from earlier in the file, plus four CSS
+   properties with no selector attached to them, which silently broke
+   the frosted-glass panel AND swallowed the whole .hero-branding rule.
+   This replaces all of that with one clean copy of each rule. ) */
 
 .hero-bg {
   position: absolute;
@@ -507,12 +521,11 @@ a:focus-visible, button:focus-visible {
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  
+
   /* The "Smooth Transition" Mask */
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
   mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
 }
-
 
 .hero-inner {
   position: relative;
@@ -526,15 +539,19 @@ a:focus-visible, button:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  /* Remove the background/backdrop-filter/padding here */
-}
-  
-  /* The "Frosted Glass" Magic */
-  background: rgba(15, 27, 45, 0.4); /* Dark blue, 40% opaque */
-  backdrop-filter: blur(15px);        /* This blurs the video behind */
-  -webkit-backdrop-filter: blur(15px); /* Safari support */
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle highlight */
 
+  /* "Frosted Glass" panel — re-attached here since this was clearly the
+     intended target (it sat directly below this rule, just missing a
+     selector). Move this whole background/backdrop-filter/border block
+     to a different class instead if you actually want the glass panel
+     wrapping a smaller area than the full hero-content-bottom column. */
+  background: rgba(15, 27, 45, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px 20px;
+  border-radius: 8px;
+}
 
 .hero-branding {
   display: flex;
@@ -561,10 +578,4 @@ a:focus-visible, button:focus-visible {
   font-size: 22px;
   color: white;
   margin: 0;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
 }
