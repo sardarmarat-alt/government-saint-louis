@@ -611,17 +611,57 @@ a:focus-visible, button:focus-visible {
     justify-content: flex-end; /* Push items to the right */
   }
 
-  /* Make the button shrink/wrap better on mobile */
-  @media (max-width: 480px) {
-    .header-inner {
-      height: auto; /* Allow height to grow if items wrap */
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-    
-    .brand-title { font-size: 14px; } /* Slightly reduce text size */
-    .brand-sub { font-size: 10px; }
+  /* Mobile Header Cleanup */
+@media (max-width: 600px) {
+  .site-header {
+    height: auto;
+    padding: 10px 0;
   }
+
+  /* Ensure the header container allows items to sit side-by-side */
+.header-inner {
+  display: flex;
+  justify-content: space-between; /* Pushes logo to left, menu to right */
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+}
+
+/* Force the buttons container to stay on one line */
+.site-menu-wrap {
+  display: flex;
+  flex-direction: row !important; /* Forces one line */
+  flex-wrap: nowrap !important;   /* Prevents wrapping/stacking */
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Make sure the buttons themselves don't grow too large */
+.site-menu-toggle, .admin-login-btn {
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+  flex-shrink: 0; /* Prevents buttons from squishing */
+}
+
+/* Hide or shrink the title text if it gets too crowded on tiny screens */
+@media (max-width: 450px) {
+  .hero-title-small {
+    display: none; /* Hides "Government Saint Louis" text on very small screens to save space */
+  }
+}
+
+  /* Shrink the title/branding so it doesn't overlap */
+  .hero-branding {
+    transform: scale(0.9);
+  }
+
+  /* Ensure the Admin button doesn't force a wide width */
+  .admin-login-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
 </style>
 
 @media (max-width: 805px) {
@@ -649,8 +689,29 @@ a:focus-visible, button:focus-visible {
   
   /* 3. Fix the Hero Content: Reduce padding so it fits */
   .hero-content-bottom {
+  display: inline-flex; /* Shrinks the box to fit content width */
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  
+  /* The "Frosted" Look without the big box */
+  padding: 20px 30px;
+  border-radius: 16px;
+  background: rgba(15, 27, 45, 0.3); /* Softer transparency */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  /* IMPORTANT: Stops it from taking up full width of the screen */
+  margin-bottom: 20px;
+  max-width: 90%; 
+}
+}
+
+@media (max-width: 600px) {
+  .hero-content-bottom {
     padding: 15px;
-    width: 90%;
+    gap: 12px;
   }
 }
 
@@ -667,4 +728,11 @@ a:focus-visible, button:focus-visible {
   min-width: 600px; /* Ensures columns don't get squashed too much */
   display: table !important; /* Forces standard table layout */
   table-layout: auto;
+}
+
+@media (max-width: 600px) {
+  .header-inner { padding: 0 10px; }
+  .hero-title-small { display: none; } /* Hide title to give buttons room */
+  .site-menu-wrap { gap: 5px; }
+  .site-menu-toggle, .admin-login-btn { padding: 6px 10px; font-size: 11px; }
 }
