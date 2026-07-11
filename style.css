@@ -27,7 +27,7 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
 
 body {
   background: var(--bg-deep);
@@ -35,6 +35,7 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 .container {
@@ -126,7 +127,14 @@ a:focus-visible, button:focus-visible {
 }
 
 .hero-bg {
-  position: absolute; inset: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* This makes the video fill the area without stretching */
+  transform: translate(-50%, -50%); /* Keeps the video perfectly centered */
+  z-index: 0;
   background:
     radial-gradient(ellipse 800px 400px at 50% -10%, var(--gold-soft), transparent 70%),
     repeating-linear-gradient(0deg, transparent 0 39px, var(--line) 39px 40px);
@@ -480,79 +488,11 @@ a:focus-visible, button:focus-visible {
   }
 }
 
-@media (max-width: 600px) {
-  .hero { padding: 80px 0 64px; }
-  .section { padding: 64px 0; }
-
-  /* The statements/applications tables have 5-6 columns and previously had
-     zero mobile handling — this was likely the reviewer's real complaint
-     if they were looking at statements.html rather than the homepage.
-     Making the table itself scrollable horizontally (instead of letting
-     it overflow the whole page) keeps every column readable without
-     needing any HTML changes. */
-  .statements-table {
-    display: block;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
-  }
-
-  .statements-container {
-    padding: 14px;
-  }
-
-  .apply-box {
-    padding: 20px;
-  }
-}
-
-/* ============ HERO - FINAL CLEANUP ============ */
-/* (Consolidated — the old version of this block had .hero, .hero-bg and
-   .hero-actions duplicated from earlier in the file, plus four CSS
-   properties with no selector attached to them, which silently broke
-   the frosted-glass panel AND swallowed the whole .hero-branding rule.
-   This replaces all of that with one clean copy of each rule. ) */
-
-.hero-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-
-  /* The "Smooth Transition" Mask */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
-}
-
-.hero-inner {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  text-align: center;
-}
-
-.hero-content-bottom {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-
-  /* "Frosted Glass" panel — re-attached here since this was clearly the
-     intended target (it sat directly below this rule, just missing a
-     selector). Move this whole background/backdrop-filter/border block
-     to a different class instead if you actually want the glass panel
-     wrapping a smaller area than the full hero-content-bottom column. */
-  background: rgba(15, 27, 45, 0.4);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 20px;
-  border-radius: 8px;
-}
-
+/* ============ HERO ============
+   One clean copy of each rule. (Previously this section had .hero,
+   .hero-bg, .hero-actions, and .hero-content-bottom each defined
+   multiple times across different patches, fighting each other —
+   consolidated to one definition per selector.) */
 .hero-branding {
   display: flex;
   align-items: center;
@@ -580,159 +520,107 @@ a:focus-visible, button:focus-visible {
   margin: 0;
 }
 
-@media (max-width: 600px) {
-  /* ... existing styles ... */
-
-  /* Update the table styles to better handle landscape orientation */
-.statements-table {
-  width: 100%;
-  table-layout: auto; /* Allows columns to adjust based on content */
-  border-collapse: collapse;
-  margin-top: 20px;
-  color: #fff;
-}
-
-/* Force the table to respect the container width */
-@media (max-width: 1000px) {
-  .statements-container {
-    overflow-x: auto; /* Adds horizontal scroll only if needed */
-    width: 95%; /* Prevents the container from hitting the very edge of the screen */
-  }
-}
-}
-
-<style>
-  .site-menu-wrap { 
-    position: relative; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    flex-wrap: wrap; /* Allow wrapping if space is tight */
-    justify-content: flex-end; /* Push items to the right */
-  }
-
-  /* Mobile Header Cleanup */
-@media (max-width: 600px) {
-  .site-header {
-    height: auto;
-    padding: 10px 0;
-  }
-
-  /* Ensure the header container allows items to sit side-by-side */
-.header-inner {
+.hero-content-bottom {
   display: flex;
-  justify-content: space-between; /* Pushes logo to left, menu to right */
-  align-items: center;
-  width: 100%;
-  padding: 10px 20px;
-}
-
-/* Force the buttons container to stay on one line */
-.site-menu-wrap {
-  display: flex;
-  flex-direction: row !important; /* Forces one line */
-  flex-wrap: nowrap !important;   /* Prevents wrapping/stacking */
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
-/* Make sure the buttons themselves don't grow too large */
-.site-menu-toggle, .admin-login-btn {
-  font-size: 12px !important;
-  padding: 6px 10px !important;
-  flex-shrink: 0; /* Prevents buttons from squishing */
-}
-
-/* Hide or shrink the title text if it gets too crowded on tiny screens */
-@media (max-width: 450px) {
-  .hero-title-small {
-    display: none; /* Hides "Government Saint Louis" text on very small screens to save space */
-  }
-}
-
-  /* Shrink the title/branding so it doesn't overlap */
-  .hero-branding {
-    transform: scale(0.9);
-  }
-
-  /* Ensure the Admin button doesn't force a wide width */
-  .admin-login-btn {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-}
-</style>
-
-@media (max-width: 805px) {
-  /* 1. Fix the Table: Make it scrollable and stop it from breaking the page */
-  .statements-container {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: auto; /* Adds scrollbar ONLY if content overflows */
-  padding: 0 10px;
-}
-
-/* Force table to fit within its container without breaking layout */
-.statements-table {
-  width: 100%;
-  min-width: 600px; /* Ensures columns don't get squashed too much */
-  display: table !important; /* Forces standard table layout */
-  table-layout: auto;
-}
-
-  /* 2. Fix the Header: Allow items to stack so they don't overflow */
-  .site-header .site-menu-wrap {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  /* 3. Fix the Hero Content: Reduce padding so it fits */
-  .hero-content-bottom {
-  display: inline-flex; /* Shrinks the box to fit content width */
   flex-direction: column;
   align-items: center;
   gap: 20px;
-  
-  /* The "Frosted" Look without the big box */
-  padding: 20px 30px;
-  border-radius: 16px;
-  background: rgba(15, 27, 45, 0.3); /* Softer transparency */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 24px 20px;
+  border-radius: 8px;
+  background: rgba(15, 27, 45, 0.4);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  
-  /* IMPORTANT: Stops it from taking up full width of the screen */
-  margin-bottom: 20px;
-  max-width: 90%; 
-}
 }
 
+/* ============ RESPONSIVE (rebuilt clean — one rule per selector) ============ */
 @media (max-width: 600px) {
+  /* Reduce space taken by the hero content on mobile */
   .hero-content-bottom {
-    padding: 15px;
-    gap: 12px;
+    padding: 15px !important;
+    gap: 10px !important;
+    background: rgba(15, 27, 45, 0.6); /* Slightly darker to improve button readability */
+  }
+
+  /* Make the buttons stack vertically and take full width */
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
+  /* Ensure buttons are full-width on mobile */
+  .hero-actions .btn {
+    width: 100%;
+    padding: 12px 10px;
+    font-size: 13px;
   }
 }
 
-.statements-container {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: auto; /* Adds scrollbar ONLY if content overflows */
-  padding: 0 10px;
+  /* --- HEADER ---
+     .site-menu-wrap is also defined inside an embedded <style> block in
+     index.html itself, which sits later in the document than this
+     external stylesheet — meaning on a tie, THAT rule normally wins the
+     cascade, not this one. !important here is deliberate: it's the only
+     reliable way to override a same-specificity rule regardless of
+     which file loads first. Targeting the admin link by its href
+     (rather than requiring a CSS class that isn't actually present in
+     the HTML — see .admin-login-btn below) means this works without
+     needing any HTML changes. */
+  .header-inner { padding: 0 12px; height: auto; min-height: 76px; flex-wrap: wrap; }
+
+  .site-menu-wrap {
+    flex-wrap: wrap !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+  }
+
+  .site-menu-wrap a[href="admin.html"] {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  .site-menu-toggle {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  /* Covers the case where a real .admin-login-btn class DOES get added
+     to the HTML later — keeps this fix working either way. */
+  .admin-login-btn {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
+
+  .brand-title { font-size: 15px; }
+  .brand-sub { font-size: 10px; }
+
+
+@media (max-width: 420px) {
+  /* Only on very narrow phones: drop the subtitle text entirely rather
+     than let three elements fight for ~300px of space. */
+  .brand-sub { display: none; }
 }
 
-/* Force table to fit within its container without breaking layout */
-.statements-table {
-  width: 100%;
-  min-width: 600px; /* Ensures columns don't get squashed too much */
-  display: table !important; /* Forces standard table layout */
-  table-layout: auto;
-}
+/* --- DATA TABLES (statements.html, prosecutor_applications_status.html) ---
+   statements.js sets `table.style.display = 'table'` inline via JS after
+   data loads. Inline styles beat plain stylesheet rules regardless of
+   media query — !important is required here, it's not optional styling
+   preference. Deliberately NOT setting any min-width: an earlier patch
+   set `min-width: 600px`, which guarantees horizontal overflow on any
+   phone narrower than 600px — exactly backwards from the goal. */
+@media (max-width: 700px) {
+  .statements-table {
+    display: block !important;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
 
-@media (max-width: 600px) {
-  .header-inner { padding: 0 10px; }
-  .hero-title-small { display: none; } /* Hide title to give buttons room */
-  .site-menu-wrap { gap: 5px; }
-  .site-menu-toggle, .admin-login-btn { padding: 6px 10px; font-size: 11px; }
+  .statements-container {
+    width: 100%;
+    max-width: 100vw;
+    padding: 14px;
+  }
 }
