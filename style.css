@@ -579,3 +579,36 @@ a:focus-visible, button:focus-visible {
   color: white;
   margin: 0;
 }
+
+@media (max-width: 600px) {
+  /* ... existing styles ... */
+
+  #statements-table {
+    display: block !important; /* Force override of JS inline style */
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+<style>
+  .site-menu-wrap { 
+    position: relative; 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    flex-wrap: wrap; /* Allow wrapping if space is tight */
+    justify-content: flex-end; /* Push items to the right */
+  }
+
+  /* Make the button shrink/wrap better on mobile */
+  @media (max-width: 480px) {
+    .header-inner {
+      height: auto; /* Allow height to grow if items wrap */
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    
+    .brand-title { font-size: 14px; } /* Slightly reduce text size */
+    .brand-sub { font-size: 10px; }
+  }
+</style>
