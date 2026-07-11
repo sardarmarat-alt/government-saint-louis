@@ -627,15 +627,19 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 805px) {
   /* 1. Fix the Table: Make it scrollable and stop it from breaking the page */
   .statements-container {
-    overflow-x: auto;
-    width: 100%;
-    padding: 0 10px;
-  }
-  
-  .statements-table {
-    display: block !important;
-    width: 100%;
-  }
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: auto; /* Adds scrollbar ONLY if content overflows */
+  padding: 0 10px;
+}
+
+/* Force table to fit within its container without breaking layout */
+.statements-table {
+  width: 100%;
+  min-width: 600px; /* Ensures columns don't get squashed too much */
+  display: table !important; /* Forces standard table layout */
+  table-layout: auto;
+}
 
   /* 2. Fix the Header: Allow items to stack so they don't overflow */
   .site-header .site-menu-wrap {
@@ -648,4 +652,19 @@ a:focus-visible, button:focus-visible {
     padding: 15px;
     width: 90%;
   }
+}
+
+.statements-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: auto; /* Adds scrollbar ONLY if content overflows */
+  padding: 0 10px;
+}
+
+/* Force table to fit within its container without breaking layout */
+.statements-table {
+  width: 100%;
+  min-width: 600px; /* Ensures columns don't get squashed too much */
+  display: table !important; /* Forces standard table layout */
+  table-layout: auto;
 }
