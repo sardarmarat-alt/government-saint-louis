@@ -583,11 +583,22 @@ a:focus-visible, button:focus-visible {
 @media (max-width: 600px) {
   /* ... existing styles ... */
 
-  #statements-table {
-    display: block !important; /* Force override of JS inline style */
-    overflow-x: auto;
-    white-space: nowrap;
+  /* Update the table styles to better handle landscape orientation */
+.statements-table {
+  width: 100%;
+  table-layout: auto; /* Allows columns to adjust based on content */
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: #fff;
+}
+
+/* Force the table to respect the container width */
+@media (max-width: 1000px) {
+  .statements-container {
+    overflow-x: auto; /* Adds horizontal scroll only if needed */
+    width: 95%; /* Prevents the container from hitting the very edge of the screen */
   }
+}
 }
 
 <style>
