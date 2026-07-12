@@ -555,7 +555,6 @@ a:focus-visible, button:focus-visible {
     padding: 12px 10px;
     font-size: 13px;
   }
-}
 
   /* --- HEADER ---
      .site-menu-wrap is also defined inside an embedded <style> block in
@@ -566,7 +565,13 @@ a:focus-visible, button:focus-visible {
      which file loads first. Targeting the admin link by its href
      (rather than requiring a CSS class that isn't actually present in
      the HTML — see .admin-login-btn below) means this works without
-     needing any HTML changes. */
+     needing any HTML changes.
+
+     NOTE: this whole block used to sit OUTSIDE this media query (a
+     stray closing brace above cut it loose), so flex-wrap:wrap was
+     being applied to .header-inner / .site-menu-wrap at every screen
+     width, not just mobile — that's what caused inconsistent wrapping
+     behavior between pages. Now correctly scoped to <=600px. */
   .header-inner { padding: 0 12px; height: auto; min-height: 76px; flex-wrap: wrap; }
 
   .site-menu-wrap {
@@ -575,7 +580,8 @@ a:focus-visible, button:focus-visible {
     gap: 8px !important;
   }
 
-  .site-menu-wrap a[href="admin.html"] {
+  .site-menu-wrap a[href="admin.html"],
+  .site-menu-wrap a[href="prosecutor_admin.html"] {
     font-size: 12px !important;
     padding: 6px 10px !important;
   }
@@ -594,7 +600,7 @@ a:focus-visible, button:focus-visible {
 
   .brand-title { font-size: 15px; }
   .brand-sub { font-size: 10px; }
-
+}
 
 @media (max-width: 420px) {
   /* Only on very narrow phones: drop the subtitle text entirely rather

@@ -46,8 +46,13 @@
     margin-top: 40px;
     border: 1px solid #ff0055;
 }
+.form-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
 .form-tabs button {
-    background: #2d2d44; color: #fff; border: none; padding: 10px 20px; 
+    background: #2d2d44; color: #fff; border: none; padding: 10px 20px;
     cursor: pointer; font-weight: bold; border-radius: 4px; margin-right: 10px;
 }
 .sc-form { display: flex; flex-direction: column; margin-top: 20px; }
@@ -56,7 +61,64 @@
 
 /* Modal */
 .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 100; }
-.modal-content { background: #222232; padding: 30px; border-radius: 8px; width: 350px; display: flex; flex-direction: column; }
-.modal-content input { background: #111; color: #fff; border: 1px solid #444; padding: 10px; margin-bottom: 15px; }
+.modal-content { background: #222232; padding: 30px; border-radius: 8px; width: 350px; max-width: 90vw; box-sizing: border-box; display: flex; flex-direction: column; }
+.modal-content input { background: #111; color: #fff; border: 1px solid #444; padding: 10px; margin-bottom: 15px; box-sizing: border-box; width: 100%; }
 .modal-content button { background: #ffcc00; color:#000; padding: 10px; border:none; font-weight:bold; cursor:pointer; margin-bottom: 10px; }
 .btn-close { background: #cc3333 !important; color: #fff !important; }
+
+/* ============ RESPONSIVE ============
+   events.css previously had no @media rules at all, unlike style.css
+   (which already breaks at 860 / 700 / 600 / 420). Matching that
+   convention here rather than inventing new breakpoints. */
+
+@media (max-width: 700px) {
+  .container {
+    margin: 24px auto;
+    padding: 0 14px;
+  }
+
+  .daily-question-box {
+    padding: 16px;
+  }
+
+  .leader-panel-box {
+    padding: 18px;
+  }
+
+  /* Fixed 220px minimum leaves almost no breathing room on phones —
+     drop to a single column so cards stack cleanly instead of
+     squeezing side by side. */
+  .rating-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .faction-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 420px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .daily-question-box,
+  .leader-panel-box {
+    padding: 14px;
+  }
+
+  .form-tabs button {
+    flex: 1 1 auto;
+    padding: 10px 12px;
+    margin-right: 0;
+  }
+
+  /* Fixed 350px was wider than the viewport itself on small phones,
+     which is what was causing the modal to overflow/get cut off. */
+  .modal-content {
+    width: 100%;
+    max-width: 92vw;
+    padding: 20px;
+  }
+}
