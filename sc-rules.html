@@ -37,12 +37,31 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 12px; font-weight: 900; color: #C9A24B;
         }
-        .nav-links { display: flex; gap: 24px; align-items: center; }
-        .nav-links a {
-            color: #94a3b8; text-decoration: none;
-            font-weight: 500; font-size: 15px; transition: color 0.2s;
+        /* Collapsible menu — same site-menu-wrap system as
+           index.html / prosecutors.html / events.html, replacing
+           the old flat .nav-links row entirely (not just below a
+           breakpoint) so behavior is identical everywhere. */
+        .site-menu-wrap { position: relative; display: flex; align-items: center; gap: 10px; }
+        .site-menu-toggle {
+            display: flex; align-items: center; gap: 8px; background: transparent; cursor: pointer;
+            border: 1px solid rgba(201,162,75,0.4); border-radius: 6px; padding: 8px 14px;
+            color: #e8e8e8; font-family: inherit; font-size: 14px;
         }
-        .nav-links a:hover, .nav-links a.active { color: #e2e8f0; }
+        .site-menu-toggle:hover { border-color: #C9A24B; }
+        .site-menu-toggle .bars { display: flex; flex-direction: column; gap: 3px; }
+        .site-menu-toggle .bars span { width: 16px; height: 2px; background: #C9A24B; display: block; }
+        .site-menu-panel {
+            position: absolute; top: calc(100% + 10px); right: 0; min-width: 240px;
+            background: #11151d; border: 1px solid rgba(201,162,75,0.3); border-radius: 8px;
+            padding: 8px; display: none; flex-direction: column; gap: 2px; z-index: 200;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+        .site-menu-panel.open { display: flex; }
+        .site-menu-panel a {
+            color: #ccc; text-decoration: none; padding: 10px 12px; border-radius: 6px; font-size: 14px;
+        }
+        .site-menu-panel a:hover { background: rgba(201,162,75,0.12); color: #C9A24B; }
+        .site-menu-panel a.active { color: #C9A24B; font-weight: bold; }
 
         /* PAGE HEADER */
         .container { max-width: 1000px; margin: 0 auto; padding: 0 24px 60px; }
@@ -122,6 +141,46 @@
             text-align: center; padding-top: 30px; border-top: 1px solid #1e2a45;
             color: #475569; font-size: 13px;
         }
+
+        /* =============================================
+           RESPONSIVE — this page had zero @media rules at all,
+           unlike index.html / events.html / prosecutors.html which
+           already break at 700px / 420px. Matching that convention
+           here rather than inventing new breakpoints.
+        ============================================= */
+        @media (max-width: 700px) {
+            .navbar { padding: 12px 16px; }
+            .navbar-brand { font-size: 15px; }
+
+            .container { padding: 0 14px 40px; }
+
+            .page-hero { padding: 32px 14px 24px; margin-bottom: 24px; }
+            .page-hero h1 { font-size: 26px; }
+            .page-hero .subtitle { font-size: 13px; letter-spacing: 2px; }
+
+            .program-stats-bar { grid-template-columns: repeat(2, 1fr); margin-bottom: 28px; }
+
+            .pr-subsection { margin-bottom: 28px; }
+            .pr-subsection h3 { font-size: 18px; }
+
+            .tasks-grid { grid-template-columns: 1fr; gap: 12px; }
+            .task-card { padding: 14px 16px; }
+
+            .deals-note { padding: 14px 16px; font-size: 13px; }
+
+            /* Lets the table scroll sideways within its own box on
+               narrow screens instead of stretching the whole page
+               out, same fix already applied to events.html. */
+            .store-table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .store-table { font-size: 13px; }
+            .store-table th, .store-table td { padding: 9px 8px; }
+        }
+
+        @media (max-width: 420px) {
+            .program-stats-bar { grid-template-columns: 1fr 1fr; }
+            .page-hero h1 { font-size: 22px; }
+            .page-hero .seal { width: 52px; height: 52px; }
+        }
     </style>
 </head>
 <body>
@@ -131,13 +190,37 @@
             <div class="brand-seal">GOV</div>
             Government Saint Louis
         </a>
-        <div class="nav-links">
-            <a href="index.html">Главная</a>
-            <a href="statements.html">Статусы заявлений</a>
-            <a href="events.html">Мероприятие (SC)</a>
-            <a href="sc-rules.html" class="active">Правила SC</a>
+        <div class="site-menu-wrap">
+            <button class="site-menu-toggle" id="site-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="site-menu-panel">
+                <span class="bars"><span></span><span></span><span></span></span>
+                Меню
+            </button>
+            <nav class="site-menu-panel" id="site-menu-panel">
+                <a href="index.html">Главная</a>
+                <a href="statements.html">Статусы заявлений</a>
+                <a href="events.html">Мероприятие (SC)</a>
+                <a href="sc-rules.html" class="active">Правила SC</a>
+            </nav>
         </div>
     </nav>
+    <script>
+      (function () {
+        const toggle = document.getElementById('site-menu-toggle');
+        const panel  = document.getElementById('site-menu-panel');
+        if (!toggle || !panel) return;
+        toggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = panel.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+        document.addEventListener('click', (e) => {
+          if (!panel.contains(e.target) && !toggle.contains(e.target)) {
+            panel.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
+    </script>
 
     <div class="container">
 
