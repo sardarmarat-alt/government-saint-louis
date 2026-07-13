@@ -319,8 +319,79 @@ function renderSanctionCard(s) {
         <button class="btn-reject"  onclick="decideSanction(${s.id}, 'Отклонено')">❌ Отклонить</button>
       </div>
     ` : '')}
+
+    ${s.status === 'Одобрено' ? renderPunishmentBlock(s) : ''}
   `;
   return card;
+}
+
+// ============================================================
+// ИСПОЛНЕНИЕ САНКЦИИ — статус после одобрения материала
+// ============================================================
+// Показывается только для материалов со статусом "Одобрено".
+// "Ожидается" — санкция одобрена, но по факту ещё не применена
+// к нарушителю. "Наказан" — прокурор подтверждает, что санкция
+// была фактически исполнена.
+function renderPunishmentBlock(s) {
+  const canDecide = ALLOWED_DECISION_MAKERS.includes(CURRENT_ADMIN_USER);
+
+  if (s.punishment_status === 'Наказан') {
+    return `
+      <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(46,204,113,0.12); border:1px solid #2ecc71;">
+        <div style="font-weight:bold; color:#2ecc71;">✅ САНКЦИЯ ИСПОЛНЕНА</div>
+        <div style="margin-top:4px; color:#aaa;">Отметил: <b style="color:#fff;">${escapeHtml(s.punished_by || '—')}</b></div>
+        ${s.punishment_comment ? `<div style="color:#aaa;">Комментарий: <i>${escapeHtml(s.punishment_comment)}</i></div>` : ''}
+      </div>
+    `;
+  }
+
+  // Одобрено, но ещё не исполнено
+  return `
+    <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(243,156,18,0.10); border:1px solid #f39c12;">
+      <div style="font-weight:bold; color:#f39c12;">🕓 ОЖИДАЕТСЯ ИСПОЛНЕНИЕ САНКЦИИ</div>
+      ${canDecide ? `
+        <input type="text" class="comment-input" id="punish-comment-${s.id}" placeholder="Комментарий по исполнению (необязательно)..." style="margin-top:8px;">
+        <div class="actions">
+          <button class="btn-approve" onclick="confirmPunishment(${s.id}, '${escapeAttr(s.target_name)}')">✅ Наказан</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+async function confirmPunishment(id, targetName) {
+  const ok = confirm(
+    `Подтвердите, что санкция в отношении «${targetName}» фактически исполнена.\n\n` +
+    `Это действие нельзя отменить через панель.`
+  );
+  if (!ok) return;
+
+  const comment = document.getElementById(`punish-comment-${id}`)?.value.trim() || '';
+  try {
+    const { data: success, error } = await sbClient.rpc('update_sanction_punishment_secure', {
+      p_sanction_id:    id,
+      p_comment:        comment,
+      p_admin_login:    CURRENT_ADMIN_USER,
+      p_admin_password: CURRENT_ADMIN_HASH
+    });
+    if (error) throw error;
+    if (success) loadSanctions();
+  } catch (err) {
+    alert('Ошибка: ' + err.message);
+  }
+}
+
+// Safely embeds a value inside onclick="...('VALUE')" — same escaping
+// approach as admin.js, needed since target_name is public user input.
+function escapeAttr(str) {
+  const jsEscaped = String(str ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'");
+  return jsEscaped
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 async function decideSanction(id, newStatus) {
