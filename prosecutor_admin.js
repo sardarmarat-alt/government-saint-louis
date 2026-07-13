@@ -228,8 +228,72 @@ function renderApplicationCard(app) {
         <button class="btn-reject"  onclick="decideApplication(${app.id}, 'Отклонено')">❌ Отклонить</button>
       </div>
     ` : '')}
+
+    ${app.status === 'Одобрено' ? renderTraineeBlock(app) : ''}
   `;
   return card;
+}
+
+// ============================================================
+// РЕЗУЛЬТАТ СТАЖИРОВКИ — статус после одобрения заявления
+// ============================================================
+// Показывается только для заявлений со статусом "Одобрено".
+// "Стажировка идёт" — заявление одобрено, стажёр проходит
+// программу. "Сдал стажировку" / "Провал стажировки" — итог,
+// который фиксирует прокурор после завершения стажировки.
+function renderTraineeBlock(app) {
+  const canDecide = ALLOWED_DECISION_MAKERS.includes(CURRENT_ADMIN_USER);
+
+  if (app.trainee_status === 'Сдал стажировку' || app.trainee_status === 'Провал стажировки') {
+    const passed = app.trainee_status === 'Сдал стажировку';
+    const color = passed ? '#2ecc71' : '#e74c3c';
+    const icon  = passed ? '✅' : '❌';
+    return `
+      <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:${passed ? 'rgba(46,204,113,0.12)' : 'rgba(231,76,60,0.12)'}; border:1px solid ${color};">
+        <div style="font-weight:bold; color:${color};">${icon} ${escapeHtml(app.trainee_status.toUpperCase())}</div>
+        <div style="margin-top:4px; color:#aaa;">Отметил: <b style="color:#fff;">${escapeHtml(app.trainee_by || '—')}</b></div>
+        ${app.trainee_comment ? `<div style="color:#aaa;">Комментарий: <i>${escapeHtml(app.trainee_comment)}</i></div>` : ''}
+      </div>
+    `;
+  }
+
+  // Одобрено, стажировка ещё идёт — результат не зафиксирован
+  return `
+    <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(243,156,18,0.10); border:1px solid #f39c12;">
+      <div style="font-weight:bold; color:#f39c12;">🕓 СТАЖИРОВКА ИДЁТ</div>
+      ${canDecide ? `
+        <input type="text" class="comment-input" id="trainee-comment-${app.id}" placeholder="Комментарий по итогам стажировки (необязательно)..." style="margin-top:8px;">
+        <div class="actions">
+          <button class="btn-approve" onclick="decideTrainee(${app.id}, 'Сдал стажировку', '${escapeAttr(app.char_name)}')">✅ Сдал</button>
+          <button class="btn-reject"  onclick="decideTrainee(${app.id}, 'Провал стажировки', '${escapeAttr(app.char_name)}')">❌ Провал</button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+async function decideTrainee(id, newTraineeStatus, charName) {
+  const verb = newTraineeStatus === 'Сдал стажировку' ? 'сдал' : 'провалил';
+  const ok = confirm(
+    `Подтвердите: стажёр «${charName}» ${verb} стажировку.\n\n` +
+    `Это действие нельзя отменить через панель.`
+  );
+  if (!ok) return;
+
+  const comment = document.getElementById(`trainee-comment-${id}`)?.value.trim() || '';
+  try {
+    const { data: success, error } = await sbClient.rpc('update_trainee_status_secure', {
+      p_application_id: id,
+      p_trainee_status: newTraineeStatus,
+      p_comment:        comment,
+      p_admin_login:    CURRENT_ADMIN_USER,
+      p_admin_password: CURRENT_ADMIN_HASH
+    });
+    if (error) throw error;
+    if (success) loadApplications();
+  } catch (err) {
+    alert('Ошибка: ' + err.message);
+  }
 }
 
 async function decideApplication(id, newStatus) {

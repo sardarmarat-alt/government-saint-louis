@@ -42,7 +42,7 @@ async function loadPage(page) {
     // Только базовая публичная информация. Мотивация, опыт, VK и IP не выбираются.
     const { data: applications, error, count } = await sbClient
       .from('prosecutor_applications')
-      .select('created_at, char_name, char_age, status, admin_comment, checked_by', { count: 'exact' })
+      .select('created_at, char_name, char_age, status, admin_comment, checked_by, trainee_status, trainee_comment, trainee_by', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
@@ -67,6 +67,19 @@ async function loadPage(page) {
       if (item.status === 'Одобрено')  statusClass = 'status-approved';
       if (item.status === 'Отклонено') statusClass = 'status-rejected';
 
+      // "Стажировка" отображается только для одобренных заявлений —
+      // до одобрения стажировка ещё не началась.
+      let traineeCell = '<span style="color:#666;">—</span>';
+      if (item.status === 'Одобрено') {
+        if (item.trainee_status === 'Сдал стажировку') {
+          traineeCell = `<span class="status-badge status-approved">Сдал стажировку</span>`;
+        } else if (item.trainee_status === 'Провал стажировки') {
+          traineeCell = `<span class="status-badge status-rejected">Провал стажировки</span>`;
+        } else {
+          traineeCell = `<span class="status-badge status-waiting">Идёт</span>`;
+        }
+      }
+
       let responseText = '';
       if (item.checked_by && item.status !== 'На рассмотрении') {
         responseText += `(${escapeHtml(item.checked_by)}) `;
@@ -84,6 +97,7 @@ async function loadPage(page) {
         <td style="font-weight: bold;">${escapeHtml(item.char_name)}</td>
         <td>${escapeHtml(item.char_age)}</td>
         <td><span class="status-badge ${statusClass}">${escapeHtml(item.status)}</span></td>
+        <td>${traineeCell}</td>
         <td style="color: #ccc; font-style: italic;">${responseText}</td>
       `;
       tbody.appendChild(tr);
