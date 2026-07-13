@@ -13,7 +13,7 @@ let CURRENT_ADMIN_HASH = sessionStorage.getItem('admin_hash') || '';
 // !!! Замените 'HeadProsecutor_login' на реальный логин, когда заведёте его в admin_users.
 // Это соответствует проверке внутри RPC-функций в базе данных —
 // значения здесь и там должны совпадать.
-const ALLOWED_DECISION_MAKERS = ['Marat_Sardar', 'HeadProsecutor_login'];
+const ALLOWED_DECISION_MAKERS = ['Marat_Sardar', 'Anki_Imperial','Lucky_Grek'];
 
 function initSupabase() {
   if (window.supabase) {
