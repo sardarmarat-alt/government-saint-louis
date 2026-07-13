@@ -43,7 +43,7 @@ async function loadPage(page) {
     // Ссылки на доказательства (evidence_link) и логин подавшего прокурора намеренно не выбираются.
     const { data: sanctions, error, count } = await sbClient
       .from('prosecutor_sanctions')
-      .select('created_at, target_name, target_faction, status, admin_comment, checked_by', { count: 'exact' })
+      .select('created_at, target_name, target_faction, status, admin_comment, checked_by, punishment_status, punishment_comment, punished_by', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
@@ -68,6 +68,17 @@ async function loadPage(page) {
       if (item.status === 'Одобрено')  statusClass = 'status-approved';
       if (item.status === 'Отклонено') statusClass = 'status-rejected';
 
+      // "Исполнение" отображается только для одобренных материалов —
+      // до одобрения исполнять ещё нечего.
+      let punishmentCell = '<span style="color:#666;">—</span>';
+      if (item.status === 'Одобрено') {
+        if (item.punishment_status === 'Наказан') {
+          punishmentCell = `<span class="status-badge status-approved">Наказан</span>`;
+        } else {
+          punishmentCell = `<span class="status-badge status-waiting">Ожидается</span>`;
+        }
+      }
+
       let responseText = '';
       if (item.checked_by && item.status !== 'На рассмотрении') {
         responseText += `(${escapeHtml(item.checked_by)}) `;
@@ -85,6 +96,7 @@ async function loadPage(page) {
         <td style="font-weight: bold;">${escapeHtml(item.target_name)}</td>
         <td>${escapeHtml(item.target_faction)}</td>
         <td><span class="status-badge ${statusClass}">${escapeHtml(item.status)}</span></td>
+        <td>${punishmentCell}</td>
         <td style="color: #ccc; font-style: italic;">${responseText}</td>
       `;
       tbody.appendChild(tr);
