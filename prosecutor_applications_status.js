@@ -71,10 +71,10 @@ async function loadPage(page) {
       // до одобрения стажировка ещё не началась.
       let traineeCell = '<span style="color:#666;">—</span>';
       if (item.status === 'Одобрено') {
-        if (item.trainee_status === 'Сдал стажировку') {
-          traineeCell = `<span class="status-badge status-approved">Сдал стажировку</span>`;
-        } else if (item.trainee_status === 'Провал стажировки') {
-          traineeCell = `<span class="status-badge status-rejected">Провал стажировки</span>`;
+        if (item.trainee_status === 'Сдал') {
+          traineeCell = `<span class="status-badge status-approved">Сдал</span>`;
+        } else if (item.trainee_status === 'Провал') {
+          traineeCell = `<span class="status-badge status-rejected">Провал</span>`;
         } else {
           traineeCell = `<span class="status-badge status-waiting">Идёт</span>`;
         }
