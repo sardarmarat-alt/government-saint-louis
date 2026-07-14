@@ -62,7 +62,7 @@ async function loadStaff() {
 
       tr.innerHTML = `
         <td style="font-weight: bold;">${escapeHtml(item.full_name)}</td>
-        <td>${item.vk_link ? `<a href="https://vk.com/${escapeHtml(item.vk_link)}" target="_blank" style="color:#5181b8;">${escapeHtml(item.vk_link)}</a>` : '—'}</td>
+        <td>${item.vk_link ? `<a href="https://vk.com/${escapeHtml(item.vk_link)}" target="_blank" class="vk-link-btn">VK</a>` : '—'}</td>
         <td><span class="rank-badge ${rankClass}">${escapeHtml(item.rank)}</span></td>
         <td>${formattedDate}</td>
       `;
