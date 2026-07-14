@@ -15,6 +15,12 @@ let CURRENT_ADMIN_HASH = sessionStorage.getItem('admin_hash') || '';
 // значения здесь и там должны совпадать.
 const ALLOWED_DECISION_MAKERS = ['Marat_Sardar', 'Anki_Imperial','Lucky_Grek'];
 
+// Pagination — mirrors the same 10-per-page pattern used on the
+// public status pages (prosecutor_applications_status.js etc).
+const ITEMS_PER_PAGE = 10;
+let applicationsPage = 1;
+let sanctionsPage = 1;
+
 function initSupabase() {
   if (window.supabase) {
     sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -151,6 +157,7 @@ function afterLogin() {
   }
   loadApplications();
   loadSanctions();
+  loadStaff();
 }
 
 // ============================================================
@@ -159,22 +166,29 @@ function afterLogin() {
 function switchTab(tab) {
   document.getElementById('tab-applications').classList.toggle('active', tab === 'applications');
   document.getElementById('tab-sanctions').classList.toggle('active', tab === 'sanctions');
+  document.getElementById('tab-staff').classList.toggle('active', tab === 'staff');
   document.getElementById('applications-panel').style.display = tab === 'applications' ? 'block' : 'none';
   document.getElementById('sanctions-panel').style.display     = tab === 'sanctions'    ? 'block' : 'none';
+  document.getElementById('staff-panel').style.display         = tab === 'staff'        ? 'block' : 'none';
 }
 
 // ============================================================
 // APPLICATIONS (TRAINEE)
 // ============================================================
-async function loadApplications() {
+async function loadApplications(page = 1) {
+  applicationsPage = page;
   const panel = document.getElementById('applications-panel');
   panel.innerHTML = '<p style="color:#888;">Загрузка...</p>';
 
+  const from = (page - 1) * ITEMS_PER_PAGE;
+  const to   = from + ITEMS_PER_PAGE - 1;
+
   try {
-    const { data, error } = await sbClient
+    const { data, error, count } = await sbClient
       .from('prosecutor_applications')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
     if (error) throw error;
 
     if (!data || data.length === 0) {
@@ -184,10 +198,59 @@ async function loadApplications() {
 
     panel.innerHTML = '';
     data.forEach(app => panel.appendChild(renderApplicationCard(app)));
+
+    renderPaginationControls(panel, count, applicationsPage, loadApplications);
   } catch (err) {
     console.error('Ошибка загрузки заявлений:', err);
     panel.innerHTML = `<p style="color:#e74c3c;">Ошибка загрузки: ${err.message}</p>`;
   }
+}
+
+// ============================================================
+// PAGINATION (shared by applications & sanctions tabs)
+// ============================================================
+function renderPaginationControls(container, totalItems, currentPage, onPageClick) {
+  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+  if (totalPages <= 1) return;
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex; justify-content:center; align-items:center; gap:10px; margin-top:20px;';
+
+  const btnStyle = (active) => `
+    padding: 6px 12px;
+    background: ${active ? '#C9A24B' : '#111'};
+    color: ${active ? '#000' : '#C9A24B'};
+    border: 1px solid #C9A24B;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: ${active ? 'bold' : 'normal'};
+  `;
+
+  const btnPrev = document.createElement('button');
+  btnPrev.innerText = '« Назад';
+  btnPrev.style.cssText = btnStyle(false);
+  btnPrev.disabled = currentPage === 1;
+  if (currentPage === 1) btnPrev.style.opacity = '0.4';
+  btnPrev.onclick = () => { if (currentPage > 1) onPageClick(currentPage - 1); };
+  wrap.appendChild(btnPrev);
+
+  for (let i = 1; i <= totalPages; i++) {
+    const btnPage = document.createElement('button');
+    btnPage.innerText = i;
+    btnPage.style.cssText = btnStyle(i === currentPage);
+    btnPage.onclick = () => onPageClick(i);
+    wrap.appendChild(btnPage);
+  }
+
+  const btnNext = document.createElement('button');
+  btnNext.innerText = 'Вперед »';
+  btnNext.style.cssText = btnStyle(false);
+  btnNext.disabled = currentPage === totalPages;
+  if (currentPage === totalPages) btnNext.style.opacity = '0.4';
+  btnNext.onclick = () => { if (currentPage < totalPages) onPageClick(currentPage + 1); };
+  wrap.appendChild(btnNext);
+
+  container.appendChild(wrap);
 }
 
 function renderApplicationCard(app) {
@@ -244,8 +307,8 @@ function renderApplicationCard(app) {
 function renderTraineeBlock(app) {
   const canDecide = ALLOWED_DECISION_MAKERS.includes(CURRENT_ADMIN_USER);
 
-  if (app.trainee_status === 'Сдал' || app.trainee_status === 'Провал') {
-    const passed = app.trainee_status === 'Сдал';
+  if (app.trainee_status === 'Сдал стажировку' || app.trainee_status === 'Провал стажировки') {
+    const passed = app.trainee_status === 'Сдал стажировку';
     const color = passed ? '#2ecc71' : '#e74c3c';
     const icon  = passed ? '✅' : '❌';
     return `
@@ -264,8 +327,8 @@ function renderTraineeBlock(app) {
       ${canDecide ? `
         <input type="text" class="comment-input" id="trainee-comment-${app.id}" placeholder="Комментарий по итогам стажировки (необязательно)..." style="margin-top:8px;">
         <div class="actions">
-          <button class="btn-approve" onclick="decideTrainee(${app.id}, 'Сдал', '${escapeAttr(app.char_name)}')">✅ Сдал</button>
-          <button class="btn-reject"  onclick="decideTrainee(${app.id}, 'Провал', '${escapeAttr(app.char_name)}')">❌ Провал</button>
+          <button class="btn-approve" onclick="decideTrainee(${app.id}, 'Сдал стажировку', '${escapeAttr(app.char_name)}')">✅ Сдал</button>
+          <button class="btn-reject"  onclick="decideTrainee(${app.id}, 'Провал стажировки', '${escapeAttr(app.char_name)}')">❌ Провал</button>
         </div>
       ` : ''}
     </div>
@@ -273,7 +336,7 @@ function renderTraineeBlock(app) {
 }
 
 async function decideTrainee(id, newTraineeStatus, charName) {
-  const verb = newTraineeStatus === 'Сдал' ? 'сдал' : 'провалил';
+  const verb = newTraineeStatus === 'Сдал стажировку' ? 'сдал' : 'провалил';
   const ok = confirm(
     `Подтвердите: стажёр «${charName}» ${verb} стажировку.\n\n` +
     `Это действие нельзя отменить через панель.`
@@ -290,7 +353,7 @@ async function decideTrainee(id, newTraineeStatus, charName) {
       p_admin_password: CURRENT_ADMIN_HASH
     });
     if (error) throw error;
-    if (success) loadApplications();
+    if (success) loadApplications(applicationsPage);
   } catch (err) {
     alert('Ошибка: ' + err.message);
   }
@@ -307,7 +370,7 @@ async function decideApplication(id, newStatus) {
       p_admin_password: CURRENT_ADMIN_HASH
     });
     if (error) throw error;
-    if (success) loadApplications();
+    if (success) loadApplications(applicationsPage);
   } catch (err) {
     alert('Ошибка: ' + err.message);
   }
@@ -316,15 +379,20 @@ async function decideApplication(id, newStatus) {
 // ============================================================
 // SANCTIONS
 // ============================================================
-async function loadSanctions() {
+async function loadSanctions(page = 1) {
+  sanctionsPage = page;
   const panel = document.getElementById('sanctions-panel');
   panel.innerHTML = '<p style="color:#888;">Загрузка...</p>';
 
+  const from = (page - 1) * ITEMS_PER_PAGE;
+  const to   = from + ITEMS_PER_PAGE - 1;
+
   try {
-    const { data, error } = await sbClient
+    const { data, error, count } = await sbClient
       .from('prosecutor_sanctions')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .range(from, to);
     if (error) throw error;
 
     if (!data || data.length === 0) {
@@ -334,6 +402,8 @@ async function loadSanctions() {
 
     panel.innerHTML = '';
     data.forEach(s => panel.appendChild(renderSanctionCard(s)));
+
+    renderPaginationControls(panel, count, sanctionsPage, loadSanctions);
   } catch (err) {
     console.error('Ошибка загрузки материалов:', err);
     panel.innerHTML = `<p style="color:#e74c3c;">Ошибка загрузки: ${err.message}</p>`;
@@ -439,7 +509,7 @@ async function confirmPunishment(id, targetName) {
       p_admin_password: CURRENT_ADMIN_HASH
     });
     if (error) throw error;
-    if (success) loadSanctions();
+    if (success) loadSanctions(sanctionsPage);
   } catch (err) {
     alert('Ошибка: ' + err.message);
   }
@@ -469,7 +539,113 @@ async function decideSanction(id, newStatus) {
       p_admin_password: CURRENT_ADMIN_HASH
     });
     if (error) throw error;
-    if (success) loadSanctions();
+    if (success) loadSanctions(sanctionsPage);
+  } catch (err) {
+    alert('Ошибка: ' + err.message);
+  }
+}
+
+// ============================================================
+// СОСТАВ ПРОКУРАТУРЫ (STAFF ROSTER)
+// ============================================================
+const RANK_ORDER = [
+  'Главный прокурор',
+  'Заместитель главного прокурора',
+  'Старший прокурор',
+  'Прокурор',
+  'Стажёр'
+];
+const RANK_CLASS = {
+  'Главный прокурор':                'rank-head',
+  'Заместитель главного прокурора':  'rank-vice',
+  'Старший прокурор':                'rank-senior',
+  'Прокурор':                        'rank-prosecutor',
+  'Стажёр':                          'rank-trainee'
+};
+// Ranks assignable through the dropdown below. 'Стажёр' is only
+// ever set automatically on approval, and 'Главный прокурор' is
+// fixed — neither shows up as an option here, matching the same
+// restriction enforced server-side in update_prosecutor_rank_secure.
+const ASSIGNABLE_RANKS = ['Прокурор', 'Старший прокурор', 'Заместитель главного прокурора'];
+
+async function loadStaff() {
+  const panel = document.getElementById('staff-panel');
+  panel.innerHTML = '<p style="color:#888;">Загрузка...</p>';
+
+  try {
+    const { data, error } = await sbClient
+      .from('prosecutor_staff')
+      .select('*');
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      panel.innerHTML = '<p style="color:#888;">Состав пока пуст.</p>';
+      return;
+    }
+
+    data.sort((a, b) => RANK_ORDER.indexOf(a.rank) - RANK_ORDER.indexOf(b.rank));
+
+    panel.innerHTML = '';
+    data.forEach(s => panel.appendChild(renderStaffCard(s)));
+  } catch (err) {
+    console.error('Ошибка загрузки состава:', err);
+    panel.innerHTML = `<p style="color:#e74c3c;">Ошибка загрузки: ${err.message}</p>`;
+  }
+}
+
+function renderStaffCard(s) {
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  const canDecide = ALLOWED_DECISION_MAKERS.includes(CURRENT_ADMIN_USER);
+  const rankClass = RANK_CLASS[s.rank] || 'rank-trainee';
+
+  const dropdownOptions = ASSIGNABLE_RANKS
+    .map(r => `<option value="${escapeHtml(r)}" ${r === s.rank ? 'selected' : ''}>${escapeHtml(r)}</option>`)
+    .join('');
+
+  // Rank changes aren't offered for the fixed Главный прокурор row —
+  // there's nothing to promote/demote them into via this tool.
+  const canChangeRank = canDecide && s.rank !== 'Главный прокурор';
+
+  card.innerHTML = `
+    <div class="card-header">
+      <div>
+        <span style="font-size:17px; color:#C9A24B;"><b>${escapeHtml(s.full_name)}</b></span>
+        ${s.vk_link ? `<span style="color:#888; margin-left:10px;">VK: <a href="https://vk.com/${escapeHtml(s.vk_link)}" target="_blank" style="color:#5181b8;">${escapeHtml(s.vk_link)}</a></span>` : ''}
+      </div>
+      <span class="rank-badge ${rankClass}">${escapeHtml(s.rank)}</span>
+    </div>
+    <div class="field"><div class="field-label">В составе с</div><div class="field-value">${new Date(s.added_at).toLocaleDateString('ru-RU')}</div></div>
+    ${s.updated_by ? `<div class="field"><div class="field-label">Последнее изменение звания</div><div class="field-value">${escapeHtml(s.updated_by)}</div></div>` : ''}
+
+    ${canChangeRank ? `
+      <div class="actions" style="align-items:center;">
+        <select class="rank-select" id="rank-select-${s.id}">${dropdownOptions}</select>
+        <button class="btn-approve" onclick="decideRank(${s.id}, '${escapeAttr(s.full_name)}')">Изменить звание</button>
+      </div>
+    ` : ''}
+  `;
+  return card;
+}
+
+async function decideRank(id, fullName) {
+  const select = document.getElementById(`rank-select-${id}`);
+  const newRank = select?.value;
+  if (!newRank) return;
+
+  const ok = confirm(`Подтвердите: назначить «${fullName}» звание «${newRank}».`);
+  if (!ok) return;
+
+  try {
+    const { data: success, error } = await sbClient.rpc('update_prosecutor_rank_secure', {
+      p_staff_id:       id,
+      p_new_rank:       newRank,
+      p_admin_login:    CURRENT_ADMIN_USER,
+      p_admin_password: CURRENT_ADMIN_HASH
+    });
+    if (error) throw error;
+    if (success) loadStaff();
   } catch (err) {
     alert('Ошибка: ' + err.message);
   }

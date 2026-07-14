@@ -67,6 +67,18 @@
     color: #f39c12; background: rgba(243,156,18,0.1); border: 1px solid #f39c12;
     padding: 12px; border-radius: 6px; margin-bottom: 20px;
   }
+
+  .rank-badge { padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; white-space: nowrap; }
+  .rank-head        { background: rgba(201,162,75,0.18); color: #C9A24B; border: 1px solid #C9A24B; }
+  .rank-vice        { background: rgba(155,89,182,0.15); color: #9b59b6; border: 1px solid #9b59b6; }
+  .rank-senior      { background: rgba(52,152,219,0.15); color: #3498db; border: 1px solid #3498db; }
+  .rank-prosecutor  { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+  .rank-trainee     { background: rgba(243,156,18,0.15); color: #f39c12; border: 1px solid #f39c12; }
+
+  .rank-select {
+    background: #0a0e14; color: #fff; border: 1px solid #333; border-radius: 4px;
+    padding: 6px 8px; margin-left: 8px; font-size: 13px;
+  }
 </style>
 </head>
 <body>
@@ -100,10 +112,12 @@
   <div class="tab-bar">
     <button class="tab-btn active" id="tab-applications" onclick="switchTab('applications')">Заявления на стажировку</button>
     <button class="tab-btn" id="tab-sanctions" onclick="switchTab('sanctions')">Материалы на санкции</button>
+    <button class="tab-btn" id="tab-staff" onclick="switchTab('staff')">Состав прокуратуры</button>
   </div>
 
   <div id="applications-panel"></div>
   <div id="sanctions-panel" style="display:none;"></div>
+  <div id="staff-panel" style="display:none;"></div>
 </div>
 
 <script src="prosecutor_admin.js"></script>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Состав прокуратуры | Government</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    .rank-badge { padding: 4px 12px; border-radius: 4px; font-size: 13px; font-weight: bold; white-space: nowrap; }
+    .rank-head        { background: rgba(201,162,75,0.18); color: #C9A24B; border: 1px solid #C9A24B; }
+    .rank-vice        { background: rgba(155,89,182,0.15); color: #9b59b6; border: 1px solid #9b59b6; }
+    .rank-senior      { background: rgba(52,152,219,0.15); color: #3498db; border: 1px solid #3498db; }
+    .rank-prosecutor  { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid #2ecc71; }
+    .rank-trainee     { background: rgba(243,156,18,0.15); color: #f39c12; border: 1px solid #f39c12; }
+  </style>
+</head>
+<body>
+
+  <div style="text-align: center; margin-top: 24px;">
+    <a href="prosecutors.html" style="color: #C9A24B; text-decoration: none; font-family: sans-serif;">← Вернуться на страницу прокуратуры</a>
+  </div>
+
+  <div class="statements-container">
+    <h2 style="color: #C9A24B; text-align: center;">Состав прокуратуры</h2>
+    <p style="text-align: center; color: #aaa; margin-top: 8px;">Действующий личный состав прокуратуры по званиям</p>
+
+    <div id="loading" class="loading-text" style="margin-top: 20px;">Загрузка данных из базы...</div>
+
+    <table class="statements-table" id="staff-table" style="display: none;">
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>VK</th>
+          <th>Звание</th>
+          <th>В составе с</th>
+        </tr>
+      </thead>
+      <tbody id="staff-tbody"></tbody>
+    </table>
+  </div>
+
+  <footer style="text-align: center; margin-top: 50px; padding: 20px; border-top: 1px solid #222;">
+    <p style="color: #555; font-size: 12px;">
+      © 2026 Правительство штата. Все права защищены.
+      <a href="prosecutor_admin.html" style="color: transparent; user-select: none; cursor: default; text-decoration: none;">·</a>
+    </p>
+  </footer>
+
+  <script src="prosecutor_staff.js"></script>
+</body>
+</html>
