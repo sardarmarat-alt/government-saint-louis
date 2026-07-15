@@ -307,8 +307,8 @@ function renderApplicationCard(app) {
 function renderTraineeBlock(app) {
   const canDecide = ALLOWED_DECISION_MAKERS.includes(CURRENT_ADMIN_USER);
 
-  if (app.trainee_status === 'Сдал стажировку' || app.trainee_status === 'Провал стажировки') {
-    const passed = app.trainee_status === 'Сдал стажировку';
+  if (app.trainee_status === 'Сдал' || app.trainee_status === 'Провал') {
+    const passed = app.trainee_status === 'Сдал';
     const color = passed ? '#2ecc71' : '#e74c3c';
     const icon  = passed ? '✅' : '❌';
     return `
@@ -327,8 +327,8 @@ function renderTraineeBlock(app) {
       ${canDecide ? `
         <input type="text" class="comment-input" id="trainee-comment-${app.id}" placeholder="Комментарий по итогам стажировки (необязательно)..." style="margin-top:8px;">
         <div class="actions">
-          <button class="btn-approve" onclick="decideTrainee(${app.id}, 'Сдал стажировку', '${escapeAttr(app.char_name)}')">✅ Сдал</button>
-          <button class="btn-reject"  onclick="decideTrainee(${app.id}, 'Провал стажировки', '${escapeAttr(app.char_name)}')">❌ Провал</button>
+          <button class="btn-approve" onclick="decideTrainee(${app.id}, 'Сдал', '${escapeAttr(app.char_name)}')">✅ Сдал</button>
+          <button class="btn-reject"  onclick="decideTrainee(${app.id}, 'Провал', '${escapeAttr(app.char_name)}')">❌ Провал</button>
         </div>
       ` : ''}
     </div>
@@ -336,7 +336,7 @@ function renderTraineeBlock(app) {
 }
 
 async function decideTrainee(id, newTraineeStatus, charName) {
-  const verb = newTraineeStatus === 'Сдал стажировку' ? 'сдал' : 'провалил';
+  const verb = newTraineeStatus === 'Сдал' ? 'сдал' : 'провалил';
   const ok = confirm(
     `Подтвердите: стажёр «${charName}» ${verb} стажировку.\n\n` +
     `Это действие нельзя отменить через панель.`
