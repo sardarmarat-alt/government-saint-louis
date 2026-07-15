@@ -13,7 +13,7 @@ let CURRENT_ADMIN_HASH = sessionStorage.getItem('admin_hash') || '';
 // !!! Замените 'HeadProsecutor_login' на реальный логин, когда заведёте его в admin_users.
 // Это соответствует проверке внутри RPC-функций в базе данных —
 // значения здесь и там должны совпадать.
-const ALLOWED_DECISION_MAKERS = ['Marat_Sardar', 'Anki_Imperial','Lucky_Grek'];
+const ALLOWED_DECISION_MAKERS = ['Marat_Sardar', 'Anki_Imperial','Lucky_Grek', 'Craig_Stevenson'];
 
 // Pagination — mirrors the same 10-per-page pattern used on the
 // public status pages (prosecutor_applications_status.js etc).
