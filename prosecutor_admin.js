@@ -479,14 +479,25 @@ function renderPunishmentBlock(s) {
     `;
   }
 
+  if (s.punishment_status === 'Не исполнено') {
+    return `
+      <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(231,76,60,0.12); border:1px solid #e74c3c;">
+        <div style="font-weight:bold; color:#e74c3c;">❌ САНКЦИЯ НЕ ИСПОЛНЕНА</div>
+        <div style="margin-top:4px; color:#aaa;">Отметил: <b style="color:#fff;">${escapeHtml(s.punished_by || '—')}</b></div>
+        ${s.punishment_comment ? `<div style="color:#aaa;">Причина: <i>${escapeHtml(s.punishment_comment)}</i></div>` : ''}
+      </div>
+    `;
+  }
+
   // Одобрено, но ещё не исполнено
   return `
     <div class="interview-block" style="margin-top:12px; padding:12px; border-radius:6px; background:rgba(243,156,18,0.10); border:1px solid #f39c12;">
       <div style="font-weight:bold; color:#f39c12;">🕓 ОЖИДАЕТСЯ ИСПОЛНЕНИЕ САНКЦИИ</div>
       ${canDecide ? `
-        <input type="text" class="comment-input" id="punish-comment-${s.id}" placeholder="Комментарий по исполнению (необязательно)..." style="margin-top:8px;">
+        <input type="text" class="comment-input" id="punish-comment-${s.id}" placeholder="Комментарий по исполнению (обязательно для «Не исполнено»)..." style="margin-top:8px;">
         <div class="actions">
           <button class="btn-approve" onclick="confirmPunishment(${s.id}, '${escapeAttr(s.target_name)}')">✅ Наказан</button>
+          <button class="btn-reject" onclick="rejectPunishment(${s.id}, '${escapeAttr(s.target_name)}')">❌ Не исполнено</button>
         </div>
       ` : ''}
     </div>
@@ -503,6 +514,38 @@ async function confirmPunishment(id, targetName) {
   const comment = document.getElementById(`punish-comment-${id}`)?.value.trim() || '';
   try {
     const { data: success, error } = await sbClient.rpc('update_sanction_punishment_secure', {
+      p_sanction_id:    id,
+      p_comment:        comment,
+      p_admin_login:    CURRENT_ADMIN_USER,
+      p_admin_password: CURRENT_ADMIN_HASH
+    });
+    if (error) throw error;
+    if (success) loadSanctions(sanctionsPage);
+  } catch (err) {
+    alert('Ошибка: ' + err.message);
+  }
+}
+
+// Alternative outcome to confirmPunishment(): the sanction was approved
+// but couldn't actually be carried out (target left the faction,
+// evidence turned out insufficient, etc). Requires a reason — the RPC
+// itself also enforces this, so it's rejected server-side even if the
+// client check were bypassed.
+async function rejectPunishment(id, targetName) {
+  const comment = document.getElementById(`punish-comment-${id}`)?.value.trim() || '';
+  if (!comment) {
+    alert('Укажите причину, по которой санкцию не удалось исполнить.');
+    return;
+  }
+
+  const ok = confirm(
+    `Подтвердите: санкцию в отношении «${targetName}» не удалось исполнить.\n\n` +
+    `Это действие нельзя отменить через панель.`
+  );
+  if (!ok) return;
+
+  try {
+    const { data: success, error } = await sbClient.rpc('reject_sanction_punishment_secure', {
       p_sanction_id:    id,
       p_comment:        comment,
       p_admin_login:    CURRENT_ADMIN_USER,
