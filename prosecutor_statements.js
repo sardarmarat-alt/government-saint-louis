@@ -75,7 +75,7 @@ async function loadPage(page) {
         if (item.punishment_status === 'Наказан') {
           punishmentCell = `<span class="status-badge status-approved">Наказан</span>`;
         } else if (item.punishment_status === 'Не исполнено') {
-          punishmentCell = `<span class="status-badge status-rejected">Не исполнено</span>`;
+          punishmentCell = `<span class="status-badge status-rejected">Отказ</span>`;
         } else {
           punishmentCell = `<span class="status-badge status-waiting">Ожидается</span>`;
         }
