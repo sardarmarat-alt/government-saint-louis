@@ -1,333 +1,106 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Government</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071b33">
+  <title>Government of the State of Saint Louis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-
-<!-- ====================== HEADER ====================== -->
-<header class="site-header">
-  <style>
-    .site-menu-wrap { position:relative; display:flex; align-items:center; gap:10px; }
-    .site-menu-toggle {
-      display:flex; align-items:center; gap:8px; background:transparent; cursor:pointer;
-      border:1px solid rgba(201,162,75,0.4); border-radius:6px; padding:8px 14px;
-      color:#e8e8e8; font-family:inherit; font-size:14px;
-    }
-    .site-menu-toggle:hover { border-color:#C9A24B; }
-    .site-menu-toggle .bars { display:flex; flex-direction:column; gap:3px; }
-    .site-menu-toggle .bars span { width:16px; height:2px; background:#C9A24B; display:block; }
-    .site-menu-panel {
-      position:absolute; top:calc(100% + 10px); right:0; min-width:240px;
-      background:#11151d; border:1px solid rgba(201,162,75,0.3); border-radius:8px;
-      padding:8px; display:none; flex-direction:column; gap:2px; z-index:200;
-      box-shadow:0 12px 30px rgba(0,0,0,0.4);
-    }
-    .site-menu-panel.open { display:flex; }
-    .site-menu-panel a {
-      color:#ccc; text-decoration:none; padding:10px 12px; border-radius:6px; font-size:14px;
-    }
-    .site-menu-panel a:hover { background:rgba(201,162,75,0.12); color:#C9A24B; }
-    .site-menu-panel a.highlight { color:#C9A24B; font-weight:bold; }
-  </style>
-  <div class="container header-inner">
-    <div class="brand">
-      <div class="seal">GOV</div>
-      <div class="brand-text">
-        <span class="brand-title">Government</span>
-        <span class="brand-sub">State of Saint Louis</span>
+  <a class="skip-link" href="#main-content">Перейти к содержанию</a>
+  <header class="site-header">
+    <div class="utility-bar"><div class="container">Официальный портал правительства штата Saint Louis</div></div>
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Government of the State of Saint Louis">
+        <span class="seal" aria-hidden="true">SL</span>
+        <span class="brand-text"><strong>Government</strong><span>State of Saint Louis</span></span>
+      </a>
+      <div class="site-menu-wrap">
+        <a class="admin-login-btn" href="admin.html">Вход для админов</a>
+        <button class="site-menu-toggle" id="site-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="site-menu-panel">
+          <span class="bars" aria-hidden="true"><span></span><span></span><span></span></span>Меню
+        </button>
+        <nav class="site-menu-panel" id="site-menu-panel" aria-label="Основная навигация">
+          <a href="#structure">Структура</a><a href="#leadership">Руководство</a><a href="#apply">Заявление на Юриста</a>
+          <a href="#event">Мероприятие</a><a href="#contacts">Контакты</a><a href="prosecutors.html">Прокуратура</a>
+          <a href="statements.html" class="highlight">Статусы заявлений</a>
+        </nav>
       </div>
     </div>
-    <div class="site-menu-wrap">
-      <a href="admin.html" style="border:1px solid #C9A24B; border-radius:6px; padding:8px 14px; color:#C9A24B; text-decoration:none; font-size:14px; white-space:nowrap;">Вход для админов</a>
-      <button class="site-menu-toggle" id="site-menu-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="site-menu-panel">
-        <span class="bars"><span></span><span></span><span></span></span>
-        Меню
-      </button>
-      <nav class="site-menu-panel" id="site-menu-panel">
-        <a href="#structure">Структура</a>
-        <a href="#leadership">Руководство</a>
-        <a href="#apply">Заявление на Юриста</a>
-        <a href="#event">Мероприятие</a>
-        <a href="#contacts">Контакты</a>
-        <a href="prosecutors.html">Прокуратура</a>
-        <a href="statements.html" class="highlight">Статусы заявлений</a>
-      </nav>
-    </div>
-  </div>
-</header>
-<script>
-  (function () {
-    const toggle = document.getElementById('site-menu-toggle');
-    const panel  = document.getElementById('site-menu-panel');
-    if (!toggle || !panel) return;
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = panel.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
-    document.addEventListener('click', (e) => {
-      if (!panel.contains(e.target) && !toggle.contains(e.target)) {
-        panel.classList.remove('open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
-  })();
-</script>
-
-<!-- ====================== HERO ====================== -->
-<section class="hero">
-  <video class="hero-bg" autoplay muted loop playsinline aria-hidden="true">
-    <source src="images/hero.mp4" type="video/mp4">
-  </video>
-  
-  <div class="container hero-inner">
-    <div class="hero-content-bottom">
-      <div class="hero-actions">
-        <a href="#apply" class="btn btn-primary">Подать заявку на Юриста</a>
-        <a href="#structure" class="btn btn-ghost">Структура правительства</a>
+  </header>
+  <main id="main-content">
+    <section class="hero">
+      <video class="hero-bg" autoplay muted loop playsinline aria-hidden="true"><source src="images/hero.mp4" type="video/mp4"></video>
+      <div class="hero-overlay"></div>
+      <div class="container hero-inner">
+        <p class="hero-kicker">Executive Office · State of Saint Louis</p>
+        <h1>Служим штату.<br><em>Работаем для людей.</em></h1>
+        <p class="hero-desc">Официальный портал Правительства штата Saint Louis: решения, институты и государственные сервисы в одном месте.</p>
+        <div class="hero-actions"><a href="#apply" class="btn btn-primary">Подать заявление</a><a href="#structure" class="btn btn-outline">Структура правительства</a></div>
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====================== STRUCTURE ====================== -->
-<section id="structure" class="section">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow">01 · Орган власти</span>
-      <h2>Структура правительства</h2>
-      <p class="section-desc">Иерархия должностей правительства штата и зона ответственности каждого министерства.</p>
-    </div>
-
-    <div class="hierarchy">
-      <div class="hierarchy-row">
-        <div class="hierarchy-card top">
-          <span class="rank">Губернатор штата</span>
-          <span class="rank-en">Governor</span>
+    </section>
+    <section id="structure" class="section section-light">
+      <div class="container">
+        <div class="section-head"><span class="eyebrow">01 · Исполнительная власть</span><h2>Структура правительства</h2><p>Система управления штатом, построенная на прозрачности полномочий и ответственности перед жителями Saint Louis.</p></div>
+        <div class="hierarchy">
+          <div class="hierarchy-row"><article class="hierarchy-card executive"><span class="rank">Губернатор штата</span><span class="rank-en">Governor of Saint Louis</span></article></div>
+          <div class="hierarchy-row"><article class="hierarchy-card deputy"><span class="rank">Заместитель губернатора</span><span class="rank-en">Deputy Governor</span></article></div>
+          <div class="hierarchy-connector" aria-hidden="true"></div>
+          <div class="ministry-grid">
+            <article class="ministry-card"><span class="ministry-number">01</span><h3>Министерство финансов</h3><p>Бюджет штата, налоги, субсидии и финансовая отчётность.</p><ul><li>Министр финансов</li><li>Заместитель Министра финансов</li></ul></article>
+            <article class="ministry-card"><span class="ministry-number">02</span><h3>Министерство юстиции</h3><p>Правосудие, прокуратура и соблюдение законности.</p><ul><li>Министр юстиции</li><li>Заместитель Генерального прокурора</li></ul></article>
+            <article class="ministry-card"><span class="ministry-number">03</span><h3>Командование Национальной гвардии</h3><p>Безопасность штата, готовность к чрезвычайным ситуациям и защита жителей.</p><ul><li>Командующий Национальной гвардии</li></ul></article>
+            <article class="ministry-card"><span class="ministry-number">04</span><h3>Министерство внутренних дел</h3><p>Внутренняя политика, обращения граждан и межведомственное взаимодействие.</p><ul><li>Министр внутренних дел</li></ul></article>
+            <article class="ministry-card"><span class="ministry-number">05</span><h3>Министерство социальной политики</h3><p>Социальная защита, здравоохранение, образование и культура.</p></article>
+          </div>
         </div>
       </div>
-      <div class="hierarchy-row">
-        <div class="hierarchy-card">
-          <span class="rank">Заместитель губернатора</span>
-          <span class="rank-en">Deputy Governor</span>
+    </section>
+    <section id="leadership" class="section leadership-section">
+      <div class="container">
+        <div class="section-head section-head-inverse"><span class="eyebrow">02 · Исполнительная команда</span><h2>Действующее руководство</h2><p>Руководители, отвечающие за работу правительства и государственных институтов штата.</p></div>
+        <div class="executive-grid">
+          <article class="leader-card leader-card-featured"><div class="leader-photo"><img src="images/governor.jpg" alt="Octavio Scerty"></div><div class="leader-content"><span class="leader-label">Governor</span><h3>Octavio Scerty</h3><p>Губернатор</p></div></article>
+          <article class="leader-card leader-card-featured"><div class="leader-photo"><img src="images/deputy.jpg" alt="Ernesto Vice"></div><div class="leader-content"><span class="leader-label">Deputy Governor</span><h3>Ernesto Vice</h3><p>Заместитель губернатора</p></div></article>
+        </div>
+        <div class="staff-grid">
+          <article class="staff-card"><span class="staff-index">01</span><h3>Kir Quwwat</h3><p>Министр финансов</p></article>
+          <article class="staff-card"><span class="staff-index">02</span><h3>Mike Loman</h3><p>Заместитель Министра финансов</p></article>
+          <article class="staff-card"><span class="staff-index">03</span><h3>Hayk Black</h3><p>Министр юстиции</p></article>
+          <article class="staff-card"><span class="staff-index">04</span><h3>Carl Village</h3><p>Заместитель Генерального прокурора</p></article>
+          <article class="staff-card"><span class="staff-index">05</span><h3>Lis Melison</h3><p>Командующий Национальной гвардии</p></article>
+          <article class="staff-card"><span class="staff-index">06</span><h3>Alexandra Grant</h3><p>Министр внутренних дел</p></article>
         </div>
       </div>
-      <div class="hierarchy-row triple">
-        <div class="hierarchy-card">
-          <span class="rank">Министерство юстиции</span>
-          <span class="rank-en">Ministry of Justice</span>
-          <p style="color:#888; font-size:13px; margin-top:8px;">Правосудие, пресечение нарушений силовых структур, прокуратура.</p>
-        </div>
-        <div class="hierarchy-card">
-          <span class="rank">Министерство финансов</span>
-          <span class="rank-en">Ministry of Finance</span>
-          <p style="color:#888; font-size:13px; margin-top:8px;">Бюджет штата, налоги, субсидии и финансовая отчётность.</p>
-        </div>
-        <div class="hierarchy-card">
-          <span class="rank">Министерство социальной политики</span>
-          <span class="rank-en">Ministry of Social Policy</span>
-          <p style="color:#888; font-size:13px; margin-top:8px;">Социальная защита, здравоохранение, образование и культура.</p>
-        </div>
+    </section>
+    <section id="apply" class="section section-light">
+      <div class="container apply-layout"><div class="section-head"><span class="eyebrow">03 · Государственная служба</span><h2>Онлайн-заявление на должность Юриста</h2><p>Заполните анкету. После проверки статуса заявление будет доступно в личном списке обращений.</p></div>
+        <div class="apply-box"><form id="statement-form" class="interactive-form">
+          <div class="form-group"><label for="char-name">Имя и Фамилия (Nick Name)</label><input type="text" id="char-name" name="charName" required placeholder="Ivan Ivanov"></div>
+          <div class="form-group"><label for="char-age">Время проживания в штате (лет)</label><input type="number" id="char-age" name="charAge" required placeholder="25" min="0" max="99"></div>
+          <div class="form-group"><label for="vk-tag">Связь (VK)</label><input type="text" id="vk-tag" name="vk" required placeholder="username"></div>
+          <div class="form-group"><label for="bio">Краткая биография / Опыт работы</label><textarea id="bio" name="biography" rows="4" required placeholder="Расскажите о себе..."></textarea></div>
+          <div class="form-group"><label for="about-oop">Что такое ООП и где оно регламентируется</label><textarea id="about-oop" name="aboutoop" rows="4" required placeholder="В каких законодательных документах можно найти информацию"></textarea></div>
+          <div class="form-group"><label for="what-oop">За нарушение каких статей присваивается статус ООП</label><textarea id="what-oop" name="whatoop" rows="4" required placeholder="Приведите хотя бы 3 примера"></textarea></div>
+          <div class="form-group"><label for="oop-order">Порядок проверки заключённого на наличие статуса ООП</label><textarea id="oop-order" name="oopOrder" rows="4" required placeholder="Очередность действий"></textarea></div>
+          <button type="submit" class="btn btn-primary">Отправить заявление</button></form><div id="form-message" class="form-message"></div></div>
       </div>
-      <div class="hierarchy-row">
-        <div class="hierarchy-card muted">
-          <span class="rank">Министерство государственной безопасности</span>
-          <span class="rank-en">Ministry of State Security</span>
-          <p style="color:#888; font-size:13px; margin-top:8px;">Государственная безопасность, противодействие терроризму и организованной преступности.</p>
-        </div>
-        <div class="hierarchy-card">
-          <span class="rank">Министерство информационной связи</span>
-          <span class="rank-en">Ministry of Information and Communication</span>
-          <p style="color:#888; font-size:13px; margin-top:8px;">Информирование граждан, пресс-релизы, обращения и эфиры.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====================== LEADERSHIP ====================== -->
-<section id="leadership" class="section alt">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow">02 · Руководство</span>
-      <h2>Действующее руководство</h2>
-      <p class="section-desc">Текущий состав руководства правительства.</p>
-    </div>
-
-    <div class="staff-grid">
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/governor.jpg" alt="Marat Sardar">
-        </div>
-        <h3 class="staff-name">Marat Sardar</h3>
-        <p class="staff-role">Governor</p>
-        <p class="staff-info">In office since: 14.06.2026<br>VK: <a href="https://vk.com/mrsardaryan" target="_blank">Contact</a></p>
-      </article>
-
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/deputy.jpg" alt="Lucky Grek" class="deputy-img">
-        </div>
-        <h3 class="staff-name">Lucky Grek</h3>
-        <p class="staff-role">Deputy Governor</p>
-        <p class="staff-info">In office since: 07.07.2026<br>VK: <a href="https://vk.com/stafskip" target="_blank">Contact</a></p>
-      </article>
-
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/finance.jpg" alt="Andrey Pastor" class="finance-img">
-        </div>
-        <h3 class="staff-name">Andrey Pastor</h3>
-        <p class="staff-role">Minister of Finance</p>
-        <p class="staff-info">In office since: 12.05.2026<br>VK: <a href="https://vk.com/pasttor" target="_blank">Contact</a></p>
-      </article>
-
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/justice.jpg" alt="Anki Imperial" class="justice-img">
-        </div>
-        <h3 class="staff-name">Anki Imperial</h3>
-        <p class="staff-role">Minister of Justice</p>
-        <p class="staff-info">In office since: 07.07.2026<br>VK: <a href="https://vk.com/vkirichkav" target="_blank">Contact</a></p>
-      </article>
-
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/security.jpg" alt="Sebastian Pierini" class="security-img">
-        </div>
-        <h3 class="staff-name">Sebastian Pierini</h3>
-        <p class="staff-role">Minister of State Security</p>
-        <p class="staff-info">In office since: 07.07.2026<br>VK: <a href="https://vk.com/officaleddie" target="_blank">Contact</a></p>
-      </article>
-
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/info.jpg" alt="Loli Molika" class="info-img">
-        </div>
-        <h3 class="staff-name">Loli Molika</h3>
-        <p class="staff-role">Minister of Information and Communication</p>
-        <p class="staff-info">In office since: 31.05.2026<br>VK: <a href="https://vk.com/lolika151" target="_blank">Contact</a></p>
-      </article>
-
-      <article class="staff-card">
-        <div class="staff-photo">
-          <img src="images/social.jpg" alt="Josep Westwood" class="social-img">
-        </div>
-        <h3 class="staff-name">Josep Westwood</h3>
-        <p class="staff-role">Minister of Social Affairs</p>
-        <p class="staff-info">In office since: 17.06.2026<br>VK: <a href="https://vk.com/josep_westwood" target="_blank">Contact</a></p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ====================== APPLY ====================== -->
-<section id="apply" class="section alt">
-  <div class="container">
-    <div class="apply-box">
-      <h3>Онлайн-заявление на должность Юриста</h3>
-      <form id="statement-form" class="interactive-form">
-        <div class="form-group">
-          <label for="char-name">Имя и Фамилия (Nick Name):</label>
-          <input type="text" id="char-name" name="charName" required placeholder="Ivan Ivanov">
-        </div>
-        <div class="form-group">
-          <label for="char-age">Время проживания в штате (лет):</label>
-          <input type="number" id="char-age" name="charAge" required placeholder="25" min="0" max="99">
-        </div>
-        <div class="form-group">
-          <label for="vk-tag">Связь (VK):</label>
-          <input type="text" id="vk-tag" name="vk" required placeholder="username">
-        </div>
-        <div class="form-group">
-          <label for="bio">Краткая биография / Опыт работы:</label>
-          <textarea id="bio" name="biography" rows="4" required placeholder="Расскажите о себе..."></textarea>
-        </div>
-        <div class="form-group">
-          <label for="about-oop">Что такое ООП и где оно регламентируется:</label>
-          <textarea id="about-oop" name="aboutoop" rows="4" required placeholder="В каких законодательных документах можно найти информацию"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="what-oop">За нарушение каких статей присваивается статус ООП:</label>
-          <textarea id="what-oop" name="whatoop" rows="4" required placeholder="Приведите хотя бы 3 примера"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="oop-order">Назовите правильный порядок проверки заключённого на наличие статуса ООП:</label>
-          <textarea id="oop-order" name="oopOrder" rows="4" required placeholder="Очередность действий"></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Отправить заявление</button>
-      </form>
-      <div id="form-message" class="form-message"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ====================== EVENT ====================== -->
-<section id="event" class="section">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow">04 · Особое Мероприятие</span>
-      <h2>Межфракционный Турнир Штата</h2>
-      <p class="section-desc">Масштабные соревнования среди государственных организаций Saint Louis.</p>
-    </div>
-
-    <div class="dept-grid">
-      <article class="dept-card" style="border-top-color: #4caf50;">
-        <h3>Призовой фонд</h3>
-        <p>Уникальные награды, денежные призы.</p>
-      </article>
-      <article class="dept-card">
-        <h3>Этапы соревнований</h3>
-        <p>1. Ежедневные задания от правительства<br>2. Межфракционные бои<br>3. Опасные задания для фракций</p>
-      </article>
-    </div>
-    <article class="dept-card">
-        <h3>История</h3>
-        <p>1] 03.07.2026 - 06.07.2026 | Winner - FBI [Первый тестовый турнир]</p>
-      </article>
-    <div style="margin-top: 30px; text-align: center;">
-      <a href="events.html" class="btn btn-ghost">Перейти на страницу мероприятия</a>
-    </div>
-  </div>
-</section>
-
-<!-- ====================== CONTACTS ====================== -->
-<section id="contacts" class="section alt">
-  <div class="container">
-    <div class="section-head">
-      <span class="eyebrow">05 · Связь</span>
-      <h2>Контакты</h2>
-    </div>
-
-    <div class="contacts-grid">
-      <div class="contact-item">
-        <span class="contact-label">Форум</span>
-        <a href="https://evolve-rp.su/forums/30/" target="_blank" rel="noopener">evolve-rp.su/forums/30</a>
-      </div>
-      <div class="contact-item">
-        <span class="contact-label">Discord</span>
-        <a href="https://discord.gg/TYdJkpEFh" target="_blank" rel="noopener">https://discord.gg/TYdJkpEFh</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ====================== FOOTER ====================== -->
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="footer-seal">GOV</div>
-    <p>© Government of Saint Louis · Evolve RP</p>
-  </div>
-</footer>
-
-<script src="script.js"></script>
+    </section>
+    <section id="event" class="section event-section"><div class="container"><div class="section-head"><span class="eyebrow">04 · Мероприятия штата</span><h2>Межфракционный Турнир Штата</h2><p>Соревнования среди государственных организаций Saint Louis.</p></div>
+      <div class="dept-grid"><article class="dept-card"><h3>Призовой фонд</h3><p>Уникальные награды и денежные призы для участников.</p></article><article class="dept-card"><h3>Этапы соревнований</h3><p>Ежедневные задания, межфракционные бои и специальные испытания.</p></article><article class="dept-card"><h3>История</h3><p>03.07.2026 – 06.07.2026 · Победитель: FBI</p></article></div>
+      <div class="section-action"><a href="events.html" class="btn btn-dark">Перейти на страницу мероприятия</a></div></div>
+    </section>
+    <section id="contacts" class="section section-light"><div class="container"><div class="section-head"><span class="eyebrow">05 · Связь с правительством</span><h2>Контакты</h2></div><div class="contacts-grid"><article class="contact-item"><span>Форум</span><a href="https://evolve-rp.su/forums/30/" target="_blank" rel="noopener">evolve-rp.su/forums/30</a></article><article class="contact-item"><span>Discord</span><a href="https://discord.gg/TYdJkpEFh" target="_blank" rel="noopener">discord.gg/TYdJkpEFh</a></article></div></div></section>
+  </main>
+  <footer class="site-footer"><div class="container footer-inner"><div class="footer-seal">SL</div><p>© Government of the State of Saint Louis · Evolve RP</p><a href="#main-content">Наверх ↑</a></div></footer>
+  <script>
+    (function () { const toggle=document.getElementById('site-menu-toggle'), panel=document.getElementById('site-menu-panel'); if(!toggle||!panel)return; toggle.addEventListener('click',e=>{e.stopPropagation();const open=panel.classList.toggle('open');toggle.setAttribute('aria-expanded',open);});document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!toggle.contains(e.target)){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');}});})();
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
